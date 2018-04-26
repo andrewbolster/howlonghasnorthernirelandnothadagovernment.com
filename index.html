@@ -1,27 +1,13 @@
 <html>
 <head>
-    <title>Days since a Hear Me Code member landed a job in tech</title>
-
-    <meta name="description" content="How many days has it been since a Hear Me Code member landed a job in tech?">
+    <title>Days since Northern Ireland had a government</title>
 
     <!-- Opengraph -->
-    <meta property="og:site_name" content="Hear Me Code">
-    <meta property="og:description" content="How many days has it been since a Hear Me Code member landed a job in tech?">
-    <meta property="og:image" content="https://shannonvturner.com/images/hearmecode_logo.png">
-    <meta property="og:title" content="Hear Me Code">
-    <meta property="og:url" content="https://hearmecode.com">
+    <meta property="og:site_name" content="How long has Northern Ireland not had a government?">
+    <meta property="og:description" content="How long has Northern Ireland not had a government?">
+    <meta property="og:title" content="How long has Northern Ireland not had a government?">
+    <meta property="og:url" content="https://howlonghasnorthernirelandnothadagovernment.com">
     <meta property="og:type" content="website">
-
-    <!-- Twitter card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@hearmecode">
-    <meta name="twitter:creator" content="@svthmc">
-    <meta name="twitter:title" content="Hear Me Code">
-    <meta name="twitter:description" content="How many days has it been since a Hear Me Code member landed a job in tech?">
-    <meta name="twitter:image:src" content="https://shannonvturner.com/images/hearmecode.png">
-    <meta name="twitter:url" content="https://hearmecode.com">
-
-    <link rel="shortcut icon" href="https://shannonvturner.com/images/hearmecode.ico">
 
     <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
     <style>
@@ -32,7 +18,7 @@
             color: #fff;
             padding: 10%;
             font-family: 'Oswald', sans-serif;
-            background-color: #00A99D;
+            background-color: #9ca6dd;
             text-align: center;
             font-size: 2.25em;
         }
@@ -41,18 +27,26 @@
             font-size: 4.5em;
         }
 
+        #record-container {
+            font-size: 3.5em;
+        }
+
+        .record {
+            font-size: 80%;
+            padding-top: 2em;
+            padding-bottom: 2em;
+        }
+
+        a {
+            color: #4c567d;
+        }
+
+        small {
+            font-size: 50%;
+        }
+
     </style>
 
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-      ga('create', 'UA-49936574-2', 'hearmecode.com');
-      ga('send', 'pageview');
-
-    </script>
 </head>
 <body>
     <div class="main">
@@ -66,12 +60,27 @@
         </div>
 
         <div>
-            days since a Hear Me Code member has landed a job in tech. 
+            days since Northern Ireland had a government.
         </div>
 
-        <div style="margin-top: 1em;">
-            Since 2015, over a dozen women credit <a href="https://hearmecode.com" style="text-decoration: underline; color: #fff;">Hear Me Code</a> with providing them the skills and experience they needed to land a tech job.
+        <div class="record">
+            <div>
+                There are
+            </div>
+
+            <div id="record-container">
+                
+            </div>
+
+            <div>
+                days until <a href='https://en.wikipedia.org/wiki/2010%E2%80%9311_Belgian_government_formation'>the record</a>.
+            </div>
         </div>
+
+        <div>
+            <small>With thanks to https://github.com/hearmecode/days-since</small>
+        </div>
+
 
     </div>
 
@@ -81,15 +90,19 @@
     <script type="text/javascript">
         $( document ).ready(function() {
             var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
-            var jobAnnounced = new Date(2017,0,31); // 0 is January for some ungodly reason
+            var noGovernmentSince = new Date(2017,0,16); // 0 is January for some ungodly reason
             var today = new Date();
-            // var diffDays = Math.round(Math.abs((jobAnnounced.getTime() - today.getTime())/(oneDay))) - 1;
+            // var diffDays = Math.round(Math.abs((noGovernmentSince.getTime() - today.getTime())/(oneDay))) - 1;
 
-            jobAnnounced = moment(jobAnnounced);
+            noGovernmentSince = moment(noGovernmentSince);
             today = moment(today);
-            diffDays = today.diff(jobAnnounced, 'days');
+            diffDays = today.diff(noGovernmentSince, 'days');
 
             $("#days-container").text(diffDays);
+
+            var toRecord = 589 - diffDays;
+
+            $("#record-container").text(toRecord);
 
         });
     </script>
