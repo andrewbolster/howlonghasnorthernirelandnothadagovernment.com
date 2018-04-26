@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <title>Days since Northern Ireland had a government</title>
 
@@ -11,9 +12,17 @@
 
     <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
     <style>
+        #days-container {
+            display: block;
+            font-size: 4.5em;
+        }
 
-        .main
-        {
+        #record-container {
+            display: block;
+            font-size: 3.5em;
+        }
+
+        #main {
             width: 80%;
             color: #fff;
             padding: 10%;
@@ -21,14 +30,6 @@
             background-color: #9ca6dd;
             text-align: center;
             font-size: 2.25em;
-        }
-
-        #days-container {
-            font-size: 4.5em;
-        }
-
-        #record-container {
-            font-size: 3.5em;
         }
 
         .record {
@@ -44,78 +45,66 @@
         small {
             font-size: 50%;
         }
-
     </style>
 
 </head>
+
 <body>
-    <div class="main">
-
-        <div>
+    <div id="main">
+        <p>
             It has been
-        </div>
-
-        <div id="days-container">
-            
-        </div>
-
-        <div>
+            <span id="days-container"></span>
             days since Northern Ireland had a government.
-        </div>
+        </p>
 
-        <div class="record">
-            <div>
-                There are
-            </div>
+        <p class="record">
+            There are
+            <span id="record-container"></span>
+            days until
+            <a href='https://en.wikipedia.org/wiki/2010%E2%80%9311_Belgian_government_formation'>the record</a>.
+        </p>
 
-            <div id="record-container">
-                
-            </div>
-
-            <div>
-                days until <a href='https://en.wikipedia.org/wiki/2010%E2%80%9311_Belgian_government_formation'>the record</a>.
-            </div>
-        </div>
-
-        <div>
+        <p>
             <small>With thanks to https://github.com/hearmecode/days-since</small>
-        </div>
-
-
+        </p>
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
-    
-    <!-- Global site tag (gtag.js) - Google Analytics Ask Bolster for numbers-->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-8275151-10"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'UA-8275151-10');
-    </script>
-
     <script type="text/javascript">
-        $( document ).ready(function() {
-            var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
-            var noGovernmentSince = new Date(2017,0,16); // 0 is January for some ungodly reason
-            var today = new Date();
-            // var diffDays = Math.round(Math.abs((noGovernmentSince.getTime() - today.getTime())/(oneDay))) - 1;
+        Date.daysSince = function (compareDate) {
+            var millisecondsInDay = 24 * 60 * 60 * 1000;
+            var timeDiff = new Date().getTime() - compareDate.getTime();
+            return Math.floor(timeDiff / millisecondsInDay);
+        }
 
-            noGovernmentSince = moment(noGovernmentSince);
-            today = moment(today);
-            diffDays = today.diff(noGovernmentSince, 'days');
+        var noGov = (function () {
+            var noGovDate = new Date(2017, 0, 16);
+            var currentRecordDays = 589;
+            var daysSinceGov = Date.daysSince(noGovDate);
 
-            $("#days-container").text(diffDays);
+            return {
+                totalDays: function () {
+                    return daysSinceGov;
+                },
+                daysToRecord: function () {
+                    return currentRecordDays - daysSinceGov;
+                }
+            };
+        })();
 
-            var toRecord = 589 - diffDays;
-
-            $("#record-container").text(toRecord);
-
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("days-container").innerHTML = noGov.totalDays();
+            document.getElementById("record-container").innerHTML = noGov.daysToRecord()
         });
     </script>
 
+    <!-- Global site tag (gtag.js) - Google Analytics Ask Bolster for numbers-->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-8275151-10"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'UA-8275151-10');
+    </script>
 </body>
+
 </html>
