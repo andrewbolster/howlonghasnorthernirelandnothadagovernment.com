@@ -1,0 +1,111 @@
+<html>
+<head>
+    <title>Days since Northern Ireland had a government</title>
+
+    <!-- Opengraph -->
+    <meta property="og:site_name" content="How long has Northern Ireland not had a government?">
+    <meta property="og:description" content="How long has Northern Ireland not had a government?">
+    <meta property="og:title" content="How long has Northern Ireland not had a government?">
+    <meta property="og:url" content="https://howlonghasnorthernirelandnothadagovernment.com">
+    <meta property="og:type" content="website">
+
+    <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+    <style>
+
+        .main
+        {
+            width: 80%;
+            color: #fff;
+            padding: 10%;
+            font-family: 'Oswald', sans-serif;
+            background-color: #9ca6dd;
+            text-align: center;
+            font-size: 2.25em;
+        }
+
+        #days-container {
+            font-size: 4.5em;
+        }
+
+        #record-container {
+            font-size: 3.5em;
+        }
+
+        .record {
+            font-size: 80%;
+            padding-top: 2em;
+            padding-bottom: 2em;
+        }
+
+        a {
+            color: #4c567d;
+        }
+
+        small {
+            font-size: 50%;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div class="main">
+
+        <div>
+            It has been
+        </div>
+
+        <div id="days-container">
+            
+        </div>
+
+        <div>
+            days since Northern Ireland had a government.
+        </div>
+
+        <div class="record">
+            <div>
+                There are
+            </div>
+
+            <div id="record-container">
+                
+            </div>
+
+            <div>
+                days until <a href='https://en.wikipedia.org/wiki/2010%E2%80%9311_Belgian_government_formation'>the record</a>.
+            </div>
+        </div>
+
+        <div>
+            <small>With thanks to https://github.com/hearmecode/days-since</small>
+        </div>
+
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+
+    <script type="text/javascript">
+        $( document ).ready(function() {
+            var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+            var noGovernmentSince = new Date(2017,0,16); // 0 is January for some ungodly reason
+            var today = new Date();
+            // var diffDays = Math.round(Math.abs((noGovernmentSince.getTime() - today.getTime())/(oneDay))) - 1;
+
+            noGovernmentSince = moment(noGovernmentSince);
+            today = moment(today);
+            diffDays = today.diff(noGovernmentSince, 'days');
+
+            $("#days-container").text(diffDays);
+
+            var toRecord = 589 - diffDays;
+
+            $("#record-container").text(toRecord);
+
+        });
+    </script>
+
+</body>
+</html>
