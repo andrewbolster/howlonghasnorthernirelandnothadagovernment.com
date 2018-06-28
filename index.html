@@ -87,13 +87,18 @@
                 },
                 daysToRecord: function () {
                     return currentRecordDays - daysSinceGov;
-                }
+                },
+                description: function () {
+                  return "It has been " + daysSinceGov +" days since Northern Ireland had a government. There are "+ currentRecordDays - daysSinceGov + " until the record";
+                };
             };
         })();
 
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("days-container").innerHTML = noGov.totalDays();
-            document.getElementById("record-container").innerHTML = noGov.daysToRecord()
+            document.getElementById("record-container").innerHTML = noGov.daysToRecord();
+            document.querySelector("meta[property='og:description']").setAttribute('content',noGov.description());
+            document.querySelector("meta[property='og:title']").setAttribute('content',noGov.description());
         });
     </script>
 
