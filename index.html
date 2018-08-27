@@ -27,7 +27,7 @@
             color: #fff;
             padding: 10%;
             font-family: 'Oswald', sans-serif;
-            background-color: #9ca6dd;
+            background-color: #dd9ca6;
             text-align: center;
             font-size: 2.25em;
         }
@@ -39,7 +39,7 @@
         }
 
         a {
-            color: #4c567d;
+            color: #7d4c56;
         }
 
         small {
@@ -57,10 +57,14 @@
             days since Northern Ireland had a government.
         </p>
 
+        <h2>What have you achieved since Jan 2017?<br/>
+
+        <a href="https://twitter.com/hashtag/my589">#my589</a></h2>
+
         <p class="record">
-            There are
+            There have been
             <span id="record-container"></span>
-            days until
+            days since
             <a href='https://en.wikipedia.org/wiki/2010%E2%80%9311_Belgian_government_formation'>passing Belgium</a>.
         </p>
 
@@ -86,10 +90,10 @@
                     return daysSinceGov;
                 },
                 daysToRecord: function () {
-                    return currentRecordDays - daysSinceGov;
+                    return Math.abs(currentRecordDays - daysSinceGov);
                 },
                 description: function () {
-                  return "It has been " + daysSinceGov +" days since Northern Ireland had a government. There are "+ currentRecordDays - daysSinceGov + " days until the record";
+                  return "It has been " + daysSinceGov +" days since Northern Ireland had a government. There have been "+ currentRecordDays - daysSinceGov + " days since passing Belgium";
                 }
             };
         })();
