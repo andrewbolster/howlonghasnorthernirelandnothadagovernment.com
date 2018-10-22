@@ -127,18 +127,17 @@
 
         var salaryCount = (function () {
             var monthlyBaseSalaryFromApr2016 = 49000 / 12;
-            var monthlyBaseSalaryFromApr2017 = 49500 / 12;
+            var monthlyBaseSalaryFromApr2017 = 49500;
             var monthlyBaseSalaryFromApr2018 = 50000 / 12;
             var noOfMLAs = 90;
 
             //Cut of initial 15%
-            var monthlyBaseSalaryAfterCutNov2018 = ((monthlyBaseSalaryFromApr2017 / 100) * 0.85)  / 12;
-            var monthsSince = new Date(2017,0,16)
+            //var monthlyBaseSalaryAfterCutNov2018 = ((monthlyBaseSalaryFromApr2017 / 100) * 0.85)  / 12;
+            //var monthsSince = new Date(2017,0,16)
 
             return {
                 totalPay: function() {
-                    console.log(Date.monthsSince(monthsSince));
-                   return ((monthlyBaseSalaryFromApr2016 * 2) + (monthlyBaseSalaryFromApr2017 * 19) + (monthlyBaseSalaryFromApr2018 * 7)) * noOfMLAs;
+                   return ((monthlyBaseSalaryFromApr2016 * 2) + (monthlyBaseSalaryFromApr2017) + (monthlyBaseSalaryFromApr2018 * 7)) * noOfMLAs;
                    
                 },
 
