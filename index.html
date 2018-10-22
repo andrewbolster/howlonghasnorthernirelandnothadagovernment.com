@@ -12,12 +12,12 @@
 
     <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
     <style>
-        #days-container {
+        #days-container, #salary-container {
             display: block;
             font-size: 4.5em;
         }
 
-        #record-container {
+        #record-container, #mla-container {
             display: block;
             font-size: 3.5em;
         }
@@ -57,6 +57,16 @@
             days since Northern Ireland had a government.
         </p>
 
+        <p>
+            The total wage bill since then is
+            <span id="salary-container"></span>
+        </p>
+
+        <p>This equals approximately
+            <span id="mla-container"></span>
+           per MLA.
+        </p>
+
         <h2>What have you achieved since Jan 2017?<br/>
 
         <a href="https://twitter.com/hashtag/my589">#my589</a></h2>
@@ -67,9 +77,12 @@
             days since
             <a href='https://en.wikipedia.org/wiki/2010%E2%80%9311_Belgian_government_formation'>passing Belgium</a>.
         </p>
+        
+
 
         <p>
-        <small><a href="about.html">More info</a><br/>With thanks to https://github.com/hearmecode/days-since</small>
+        <small><a href="about.html">More info</a><br/>With thanks to https://github.com/hearmecode/days-since</small><br>
+        <small>Salary information obtained from: <a href="http://www.niassembly.gov.uk/your-mlas/members-salaries-and-expenses/salaries-and-expenditure-rates-2016-2021/">www.niassembly.gov.uk</a></small>
         </p>
     </div>
 
@@ -78,6 +91,20 @@
             var millisecondsInDay = 24 * 60 * 60 * 1000;
             var timeDiff = new Date().getTime() - compareDate.getTime();
             return Math.floor(timeDiff / millisecondsInDay);
+        }
+
+        Date.monthsSince = function(compareDate) {
+            var millisecondsInDay = 24 * 60 * 60 * 1000;
+            var millisecondsInMonth = millisecondsInDay * 31;
+            var todaysDate = new Date();
+            if(todaysDate.getMonth() == 1){
+                millisecondsInMonth = millisecondsInDay * 28;
+            }else if(todaysDate.getMonth() == 10 ||  todaysDate.getMonth() == 3 || todaysDate.getMonth() == 5 || todaysDate.getMonth() == 8){
+                millisecondsInMonth = millisecondsInDay * 30;
+            }
+
+            var timeDiff = todaysDate.getTime() - compareDate.getTime();
+            return Math.floor(timeDiff / millisecondsInMonth);
         }
 
         var noGov = (function () {
@@ -98,9 +125,34 @@
             };
         })();
 
+        var salaryCount = (function () {
+            var monthlyBaseSalaryFromApr2016 = 49000 / 12;
+            var monthlyBaseSalaryFromApr2017 = 49500 / 12;
+            var monthlyBaseSalaryFromApr2018 = 50000 / 12;
+            var noOfMLAs = 90;
+
+            //Cut of initial 15%
+            var monthlyBaseSalaryAfterCutNov2018 = ((monthlyBaseSalaryFromApr2017 / 100) * 0.85)  / 12;
+            var monthsSince = new Date(2017,0,16)
+
+            return {
+                totalPay: function() {
+                    console.log(Date.monthsSince(monthsSince));
+                   return ((monthlyBaseSalaryFromApr2016 * 2) + (monthlyBaseSalaryFromApr2017 * 19) + (monthlyBaseSalaryFromApr2018 * 7)) * noOfMLAs;
+                   
+                },
+
+                perMLA: function(){
+                    return Math.round((this.totalPay() / noOfMLAs));
+                }
+            };
+        })();
+
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("days-container").innerHTML = noGov.totalDays();
             document.getElementById("record-container").innerHTML = noGov.daysToRecord();
+            document.getElementById("salary-container").innerHTML = "£" + (salaryCount.totalPay() / 1000000).toFixed(2) + "m";
+            document.getElementById("mla-container").innerHTML = "£" + salaryCount.perMLA();
             document.querySelector("meta[property='og:description']").setAttribute('content',noGov.description());
             document.querySelector("meta[property='og:title']").setAttribute('content',noGov.description());
         });
