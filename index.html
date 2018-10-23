@@ -146,7 +146,7 @@
 
             return {
                 totalPay: function() {
-                   return (((monthlyBaseSalaryFromApr2016 * 2) + (annualBaseSalaryFromApr2017) + (salaryPerSecond * Date.secondsSince(wageIncreaseApr2018))) * noOfMLAs);
+                   return (((monthlyBaseSalaryFromApr2016 * 2) + (annualBaseSalaryFromApr2017) + (salaryPerSecond * Date.secondsSince(wageIncreaseDateApr2018))) * noOfMLAs);
                    
                 },
 
@@ -158,8 +158,8 @@
 
         function updateCounter(){
             setTimeout(function(){
-                document.getElementById("salary-container").innerHTML = "£" + (salaryCount.totalPay().toFixed(2));
-                document.getElementById("mla-container").innerHTML = "£" + salaryCount.perMLA();
+                document.getElementById("salary-container").innerHTML = "&#163;" + (salaryCount.totalPay().toFixed(2));
+                document.getElementById("mla-container").innerHTML = "&#163;" + salaryCount.perMLA();
                 updateCounter();
             },1000)
         }
