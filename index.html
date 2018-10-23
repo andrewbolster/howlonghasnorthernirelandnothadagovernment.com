@@ -58,14 +58,15 @@
         </p>
 
         <p>
-            The total wage bill since then is
+            The total wage bill since then is*
             <span id="salary-container"></span>
         </p>
 
         <p>This equals approximately
             <span id="mla-container"></span>
-           per MLA.
+           per MLA*
         </p>
+        <small>*Using MLA base salary</small>
 
         <h2>What have you achieved since Jan 2017?<br/>
 
@@ -107,6 +108,11 @@
             return Math.floor(timeDiff / millisecondsInMonth);
         }
 
+        Date.secondsSince = function(compareDate) {
+            var timeDiff = new Date().getTime() - compareDate.getTime();
+            return Math.floor(timeDiff / 1000);
+        }
+
         var noGov = (function () {
             var noGovDate = new Date(2017, 0, 16);
             var currentRecordDays = 589;
@@ -127,31 +133,42 @@
 
         var salaryCount = (function () {
             var monthlyBaseSalaryFromApr2016 = 49000 / 12;
-            var monthlyBaseSalaryFromApr2017 = 49500;
-            var monthlyBaseSalaryFromApr2018 = 50000 / 12;
+            var annualBaseSalaryFromApr2017 = 49500;
+            var dailyBaseSalaryFromApr2018 = 50000 / 365;
+
+            var salaryPerSecond = (((dailyBaseSalaryFromApr2018 / 24) / 60) / 60);
             var noOfMLAs = 90;
+            var wageIncreaseDateApr2018 =  new Date(2018,3,01)
 
             //Cut of initial 15%
             //var monthlyBaseSalaryAfterCutNov2018 = ((monthlyBaseSalaryFromApr2017 / 100) * 0.85)  / 12;
-            //var monthsSince = new Date(2017,0,16)
+            //var wageCutNov2018 = new Date(2018,10,01)
 
             return {
                 totalPay: function() {
-                   return ((monthlyBaseSalaryFromApr2016 * 2) + (monthlyBaseSalaryFromApr2017) + (monthlyBaseSalaryFromApr2018 * 7)) * noOfMLAs;
+                   return (((monthlyBaseSalaryFromApr2016 * 2) + (annualBaseSalaryFromApr2017) + (salaryPerSecond * Date.secondsSince(wageIncreaseApr2018))) * noOfMLAs);
                    
                 },
 
                 perMLA: function(){
-                    return Math.round((this.totalPay() / noOfMLAs));
+                    return (this.totalPay() / noOfMLAs).toFixed(2);
                 }
             };
         })();
 
+        function updateCounter(){
+            setTimeout(function(){
+                document.getElementById("salary-container").innerHTML = "£" + (salaryCount.totalPay().toFixed(2));
+                document.getElementById("mla-container").innerHTML = "£" + salaryCount.perMLA();
+                updateCounter();
+            },1000)
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("days-container").innerHTML = noGov.totalDays();
             document.getElementById("record-container").innerHTML = noGov.daysToRecord();
-            document.getElementById("salary-container").innerHTML = "£" + (salaryCount.totalPay() / 1000000).toFixed(2) + "m";
-            document.getElementById("mla-container").innerHTML = "£" + salaryCount.perMLA();
+            updateCounter();
+            
             document.querySelector("meta[property='og:description']").setAttribute('content',noGov.description());
             document.querySelector("meta[property='og:title']").setAttribute('content',noGov.description());
         });
