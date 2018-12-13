@@ -58,11 +58,11 @@
         </p>
 
         <p>
-            The total wage bill since then is*
+            The total MLA's Salary bill since then is*
             <span id="salary-container"></span>
         </p>
 
-        <p>This equals approximately
+        <p>That's about
             <span id="mla-container"></span>
            per MLA*
         </p>
@@ -151,15 +151,21 @@
                 },
 
                 perMLA: function(){
-                    return (this.totalPay() / noOfMLAs).toFixed(2);
+                    return (this.totalPay() / noOfMLAs);
                 }
             };
         })();
 
+        function displayCurrency(val){
+          return Math.round(val).toLocaleString('en-GB',
+            style='currency',currency='GBP'
+          );
+        }
+
         function updateCounter(){
             setTimeout(function(){
-                document.getElementById("salary-container").innerHTML = "&#163;" + (salaryCount.totalPay().toFixed(2));
-                document.getElementById("mla-container").innerHTML = "&#163;" + salaryCount.perMLA();
+                document.getElementById("salary-container").innerHTML = "&#163;" + displayCurrency(salaryCount.totalPay());
+                document.getElementById("mla-container").innerHTML = "&#163;" + displayCurrency(salaryCount.perMLA());
                 updateCounter();
             },1000)
         }
