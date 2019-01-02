@@ -92,6 +92,13 @@
     <script type="text/javascript">
         "use strict";
 
+        var setImmediateInterval = function (func, delay) {
+            func();
+            return setTimeout(function () {
+                setImmediateInterval(func, delay);
+            }, delay);
+        };
+
         Date.daysSince = function (compareDate) {
             var millisecondsInDay = 24 * 60 * 60 * 1000;
             var timeDiff = new Date().getTime() - compareDate.getTime();
@@ -160,26 +167,23 @@
             };
         })();
 
-        function displayCurrency(val){
+        function formatCurrency(val){
           return Math.round(val).toLocaleString('en-GB', {
             style: 'currency',
             currency: 'GBP',
             minimumFractionDigits: 0
           });
-        }
+        };
 
-        function updateCounter(){
-            setTimeout(function(){
-                document.getElementById("salary-container").innerHTML = displayCurrency(salaryCount.totalPay());
-                document.getElementById("mla-container").innerHTML = displayCurrency(salaryCount.perMLA());
-                updateCounter();
-            },1000)
-        }
+        function displaySalaries() {
+            document.getElementById("salary-container").innerHTML = formatCurrency(salaryCount.totalPay());
+            document.getElementById("mla-container").innerHTML = formatCurrency(salaryCount.perMLA());
+        };
 
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("days-container").innerHTML = noGov.totalDays();
             document.getElementById("record-container").innerHTML = noGov.daysToRecord();
-            updateCounter();
+            setImmediateInterval(displaySalaries, 1000);
 
             document.querySelector("meta[property='og:description']").setAttribute('content',noGov.description());
             document.querySelector("meta[property='og:title']").setAttribute('content',noGov.description());
