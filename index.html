@@ -80,7 +80,7 @@
             days since
             <a href='https://en.wikipedia.org/wiki/2010%E2%80%9311_Belgian_government_formation'>passing Belgium</a>.
         </p>
-        
+
         <p>
         <small><a href="about.html">More info</a><br/><br/></small>
         <small><a href="https://github.com/andrewbolster/howlonghasnorthernirelandnothadagovernment.com">Built with &hearts; by NITD #Politics</a></br></br></small>
@@ -90,6 +90,8 @@
     </div>
 
     <script type="text/javascript">
+        "use strict";
+
         Date.daysSince = function (compareDate) {
             var millisecondsInDay = 24 * 60 * 60 * 1000;
             var timeDiff = new Date().getTime() - compareDate.getTime();
@@ -140,7 +142,7 @@
 
             var salaryPerSecond = (((dailyBaseSalaryFromApr2018 / 24) / 60) / 60);
             var noOfMLAs = 90;
-            var wageIncreaseDateApr2018 =  new Date(2018,3,01)
+            var wageIncreaseDateApr2018 =  new Date(2018,3,1)
 
             //Cut of initial 15%
             //var monthlyBaseSalaryAfterCutNov2018 = ((monthlyBaseSalaryFromApr2017 / 100) * 0.85)  / 12;
@@ -149,7 +151,7 @@
             return {
                 totalPay: function() {
                    return (((monthlyBaseSalaryFromApr2016 * 2) + (annualBaseSalaryFromApr2017) + (salaryPerSecond * Date.secondsSince(wageIncreaseDateApr2018))) * noOfMLAs);
-                   
+
                 },
 
                 perMLA: function(){
@@ -159,15 +161,17 @@
         })();
 
         function displayCurrency(val){
-          return Math.round(val).toLocaleString('en-GB',
-            style='currency',currency='GBP'
-          );
+          return Math.round(val).toLocaleString('en-GB', {
+            style: 'currency',
+            currency: 'GBP',
+            minimumFractionDigits: 0
+          });
         }
 
         function updateCounter(){
             setTimeout(function(){
-                document.getElementById("salary-container").innerHTML = "&#163;" + displayCurrency(salaryCount.totalPay());
-                document.getElementById("mla-container").innerHTML = "&#163;" + displayCurrency(salaryCount.perMLA());
+                document.getElementById("salary-container").innerHTML = displayCurrency(salaryCount.totalPay());
+                document.getElementById("mla-container").innerHTML = displayCurrency(salaryCount.perMLA());
                 updateCounter();
             },1000)
         }
@@ -176,7 +180,7 @@
             document.getElementById("days-container").innerHTML = noGov.totalDays();
             document.getElementById("record-container").innerHTML = noGov.daysToRecord();
             updateCounter();
-            
+
             document.querySelector("meta[property='og:description']").setAttribute('content',noGov.description());
             document.querySelector("meta[property='og:title']").setAttribute('content',noGov.description());
         });
