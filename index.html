@@ -47,32 +47,45 @@
         small {
             font-size: 50%;
         }
+        .large {
+            display: block;
+            font-size: 2.25em;
+        }
     </style>
 
 </head>
 
 <body>
     <div id="main">
+        <p id="update">
+            <span class="large">UPDATE:</span>
+            After a total of
+            <span class="large">1090</span>
+            days Northern Ireland finally has a government again.
+            <br/>
+            For detailed information visit
+            <br/>
+            <a href='https://www.bbc.co.uk/news/uk-northern-ireland-51071827'>https://www.bbc.co.uk/news/uk-northern-ireland-51071827</a>.
+        </p>
+
         <p>
             It has been
-            <span id="days-container"></span>
+            <span class="large">0</span>
             days since Northern Ireland had a government.
         </p>
 
         <p>
-            The total MLA's Salary bill since then is*
-            <span id="salary-container"></span>
+            The total MLA's Salary bill over the period of no government was approx*
+            <span class="large">£13,213,823</span>
         </p>
 
         <p>That's about
-            <span id="mla-container"></span>
+            <span class="large">£146,822</span>
            per MLA*
         </p>
         <small>*Using MLA base salary</small>
 
         <h2>What have you achieved since Jan 2017?<br/>
-
-        <a href="https://twitter.com/hashtag/my589">#my589</a></h2>
 
         <p class="record">
             There have been
@@ -92,95 +105,21 @@
     <script type="text/javascript">
         "use strict";
 
-        Date.daysSince = function (compareDate) {
-            var millisecondsInDay = 24 * 60 * 60 * 1000;
-            var timeDiff = new Date().getTime() - compareDate.getTime();
-            return Math.floor(timeDiff / millisecondsInDay);
-        }
-
-        Date.monthsSince = function(compareDate) {
-            var millisecondsInDay = 24 * 60 * 60 * 1000;
-            var millisecondsInMonth = millisecondsInDay * 31;
-            var todaysDate = new Date();
-            if(todaysDate.getMonth() == 1){
-                millisecondsInMonth = millisecondsInDay * 28;
-            }else if(todaysDate.getMonth() == 10 ||  todaysDate.getMonth() == 3 || todaysDate.getMonth() == 5 || todaysDate.getMonth() == 8){
-                millisecondsInMonth = millisecondsInDay * 30;
-            }
-
-            var timeDiff = todaysDate.getTime() - compareDate.getTime();
-            return Math.floor(timeDiff / millisecondsInMonth);
-        }
-
-        Date.secondsSince = function(compareDate) {
-            var timeDiff = new Date().getTime() - compareDate.getTime();
-            return Math.floor(timeDiff / 1000);
-        }
-
         var noGov = (function () {
-            var noGovDate = new Date(2017, 0, 16);
-            var currentRecordDays = 589;
-            var daysSinceGov = Date.daysSince(noGovDate);
+            var totalNumberOfDaysWithoutGovernment = 1090;
+            var numberOfDaysBelgiumWasWithoutGovernment = 541;
+            var daysPassedBelgium = (totalNumberOfDaysWithoutGovernment - numberOfDaysBelgiumWasWithoutGovernment);
 
             return {
-                totalDays: function () {
-                    return daysSinceGov;
-                },
-                daysToRecord: function () {
-                    return Math.abs(currentRecordDays - daysSinceGov);
-                },
+                daysPassedBelgium,
                 description: function () {
-                  return "It has been " + daysSinceGov +" days since Northern Ireland had a government. There have been "+ currentRecordDays - daysSinceGov + " days since passing Belgium";
+                  return "It has been " + daysSinceGov +" days since Northern Ireland had a government. There have been "+ daysPassedBelgium + " days since passing Belgium";
                 }
             };
         })();
-
-        var salaryCount = (function () {
-            var monthlyBaseSalaryFromApr2016 = 49000 / 12;
-            var annualBaseSalaryFromApr2017 = 49500;
-            var dailyBaseSalaryFromApr2018 = 50000 / 365;
-
-            var salaryPerSecond = (((dailyBaseSalaryFromApr2018 / 24) / 60) / 60);
-            var noOfMLAs = 90;
-            var wageIncreaseDateApr2018 =  new Date(2018,3,1)
-
-            //Cut of initial 15%
-            //var monthlyBaseSalaryAfterCutNov2018 = ((monthlyBaseSalaryFromApr2017 / 100) * 0.85)  / 12;
-            //var wageCutNov2018 = new Date(2018,10,01)
-
-            return {
-                totalPay: function() {
-                   return (((monthlyBaseSalaryFromApr2016 * 2) + (annualBaseSalaryFromApr2017) + (salaryPerSecond * Date.secondsSince(wageIncreaseDateApr2018))) * noOfMLAs);
-
-                },
-
-                perMLA: function(){
-                    return (this.totalPay() / noOfMLAs);
-                }
-            };
-        })();
-
-        function displayCurrency(val){
-          return Math.round(val).toLocaleString('en-GB', {
-            style: 'currency',
-            currency: 'GBP',
-            minimumFractionDigits: 0
-          });
-        }
-
-        function updateCounter(){
-            setTimeout(function(){
-                document.getElementById("salary-container").innerHTML = displayCurrency(salaryCount.totalPay());
-                document.getElementById("mla-container").innerHTML = displayCurrency(salaryCount.perMLA());
-                updateCounter();
-            },1000)
-        }
 
         document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("days-container").innerHTML = noGov.totalDays();
-            document.getElementById("record-container").innerHTML = noGov.daysToRecord();
-            updateCounter();
-
+            document.getElementById("record-container").innerHTML = noGov.daysPassedBelgium;
             document.querySelector("meta[property='og:description']").setAttribute('content',noGov.description());
             document.querySelector("meta[property='og:title']").setAttribute('content',noGov.description());
         });
