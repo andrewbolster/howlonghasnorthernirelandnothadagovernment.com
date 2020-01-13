@@ -14,7 +14,7 @@
 
     <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
     <style>
-        #days-container{
+        .days-container{
             display: block;
             font-size: calc(300% + 1.0vw);
         }
@@ -53,32 +53,13 @@
 
 <body>
     <div id="main">
-        <p>
-            It has been
-            <span id="days-container"></span>
-            days since Northern Ireland had a government.
-        </p>
+        <span class="days-container">
+            <a href="https://en.wikipedia.org/wiki/Executive_of_the_6th_Northern_Ireland_Assembly">We have a government!</a>
+        </span>
 
-        <p>
-            The total MLA's Salary bill since then is*
-            <span id="salary-container"></span>
-        </p>
-
-        <p>That's about
-            <span id="mla-container"></span>
-           per MLA*
-        </p>
-        <small>*Using MLA base salary</small>
-
-        <h2>What have you achieved since Jan 2017?<br/>
-
-        <a href="https://twitter.com/hashtag/my589">#my589</a></h2>
-
-        <p class="record">
-            There have been
-            <span id="record-container"></span>
-            days since
-            <a href='https://en.wikipedia.org/wiki/2010%E2%80%9311_Belgian_government_formation'>passing Belgium</a>.
+        <p>Northern Ireland has had a government for 
+            <span id="gov-num" class="days-container"></span>
+            days!
         </p>
 
         <p>
@@ -117,68 +98,23 @@
             return Math.floor(timeDiff / 1000);
         }
 
-        var noGov = (function () {
-            var noGovDate = new Date(2017, 0, 16);
-            var currentRecordDays = 589;
-            var daysSinceGov = Date.daysSince(noGovDate);
+        var gov = (function () {
+            var govDate = new Date(2020,0,11);
+            var daysSinceGov = Date.daysSince(govDate);
+
 
             return {
                 totalDays: function () {
                     return daysSinceGov;
                 },
-                daysToRecord: function () {
-                    return Math.abs(currentRecordDays - daysSinceGov);
-                },
                 description: function () {
-                  return "It has been " + daysSinceGov +" days since Northern Ireland had a government. There have been "+ currentRecordDays - daysSinceGov + " days since passing Belgium";
+                  return "Zero! Northern Ireland has had a government for  " + daysSinceNoGov + " days";
                 }
             };
         })();
-
-        var salaryCount = (function () {
-            var monthlyBaseSalaryFromApr2016 = 49000 / 12;
-            var annualBaseSalaryFromApr2017 = 49500;
-            var dailyBaseSalaryFromApr2018 = 50000 / 365;
-
-            var salaryPerSecond = (((dailyBaseSalaryFromApr2018 / 24) / 60) / 60);
-            var noOfMLAs = 90;
-            var wageIncreaseDateApr2018 =  new Date(2018,3,1)
-
-            //Cut of initial 15%
-            //var monthlyBaseSalaryAfterCutNov2018 = ((monthlyBaseSalaryFromApr2017 / 100) * 0.85)  / 12;
-            //var wageCutNov2018 = new Date(2018,10,01)
-
-            return {
-                totalPay: function() {
-                   return (((monthlyBaseSalaryFromApr2016 * 2) + (annualBaseSalaryFromApr2017) + (salaryPerSecond * Date.secondsSince(wageIncreaseDateApr2018))) * noOfMLAs);
-
-                },
-
-                perMLA: function(){
-                    return (this.totalPay() / noOfMLAs);
-                }
-            };
-        })();
-
-        function displayCurrency(val){
-          return Math.round(val).toLocaleString('en-GB', {
-            style: 'currency',
-            currency: 'GBP',
-            minimumFractionDigits: 0
-          });
-        }
-
-        function updateCounter(){
-            setTimeout(function(){
-                document.getElementById("salary-container").innerHTML = displayCurrency(salaryCount.totalPay());
-                document.getElementById("mla-container").innerHTML = displayCurrency(salaryCount.perMLA());
-                updateCounter();
-            },1000)
-        }
 
         document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("days-container").innerHTML = noGov.totalDays();
-            document.getElementById("record-container").innerHTML = noGov.daysToRecord();
+            document.getElementById("gov-num").innerHTML = gov.totalDays();
             updateCounter();
 
             document.querySelector("meta[property='og:description']").setAttribute('content',noGov.description());
