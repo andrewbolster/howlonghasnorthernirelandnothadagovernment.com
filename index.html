@@ -14,12 +14,14 @@
 
     <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
     <style>
-        .days-container{
+        #days-container {
             display: block;
             font-size: calc(300% + 1.0vw);
         }
 
-        #record-container, #mla-container, #salary-container {
+        #record-container,
+        #mla-container,
+        #salary-container {
             display: block;
             font-size: calc(180% + 2.0vw);
         }
@@ -53,25 +55,44 @@
 
 <body>
     <div id="main">
-        <span class="days-container">
-            <a href="https://en.wikipedia.org/wiki/Executive_of_the_6th_Northern_Ireland_Assembly">We have a government!</a>
-        </span>
-
-        <p>Northern Ireland has had a government for 
-            <span id="gov-num" class="days-container"></span>
-            days!
+        <p>
+            It has been
+            <span id="days-container"></span>
+            days since Northern Ireland had a government.
         </p>
 
         <p>
-        <small><a href="about.html">More info</a><br/><br/></small>
-        <small><a href="https://github.com/andrewbolster/howlonghasnorthernirelandnothadagovernment.com">Built with &hearts; by NITD #Politics</a></br></br></small>
-        <small>With thanks to https://github.com/hearmecode/days-since</small><br>
-        <small>Salary information obtained from: <a href="http://www.niassembly.gov.uk/your-mlas/members-salaries-and-expenses/salaries-and-expenditure-rates-2016-2021/">www.niassembly.gov.uk</a></small>
+            The total MLA's Salary bill since then is*
+            <span id="salary-container"></span>
+        </p>
+
+        <p>That's about
+            <span id="mla-container"></span>
+            per MLA*
+        </p>
+        <small>*Using MLA base salary</small>
+
+        <p class="record">
+            There have been
+            <span id="record-container"></span>
+            days since
+            <a href='https://en.wikipedia.org/wiki/2010%E2%80%9311_Belgian_government_formation'>passing Belgium</a>.
+        </p>
+
+        <p>
+            <small><a href="about.html">More info</a><br /><br /></small>
+            <small><a href="https://github.com/andrewbolster/howlonghasnorthernirelandnothadagovernment.com">Built with
+                    &hearts; by NITD #Politics</a></br></br></small>
+            <small>With thanks to https://github.com/hearmecode/days-since</small><br>
+            <small>Salary information obtained from: <a
+                    href="http://www.niassembly.gov.uk/your-mlas/members-salaries-and-expenses/salaries-and-expenditure-rates-2016-2021/">www.niassembly.gov.uk</a></small>
         </p>
     </div>
 
     <script type="text/javascript">
         "use strict";
+
+        var noGovDate = new Date(2022, 1, 3, 16,30); // Curse your Zero indexed dates....
 
         Date.daysSince = function (compareDate) {
             var millisecondsInDay = 24 * 60 * 60 * 1000;
@@ -79,13 +100,13 @@
             return Math.floor(timeDiff / millisecondsInDay);
         }
 
-        Date.monthsSince = function(compareDate) {
+        Date.monthsSince = function (compareDate) {
             var millisecondsInDay = 24 * 60 * 60 * 1000;
             var millisecondsInMonth = millisecondsInDay * 31;
             var todaysDate = new Date();
-            if(todaysDate.getMonth() == 1){
+            if (todaysDate.getMonth() == 1) {
                 millisecondsInMonth = millisecondsInDay * 28;
-            }else if(todaysDate.getMonth() == 10 ||  todaysDate.getMonth() == 3 || todaysDate.getMonth() == 5 || todaysDate.getMonth() == 8){
+            } else if (todaysDate.getMonth() == 10 || todaysDate.getMonth() == 3 || todaysDate.getMonth() == 5 || todaysDate.getMonth() == 8) {
                 millisecondsInMonth = millisecondsInDay * 30;
             }
 
@@ -93,32 +114,71 @@
             return Math.floor(timeDiff / millisecondsInMonth);
         }
 
-        Date.secondsSince = function(compareDate) {
+        Date.secondsSince = function (compareDate) {
             var timeDiff = new Date().getTime() - compareDate.getTime();
             return Math.floor(timeDiff / 1000);
         }
 
-        var gov = (function () {
-            var govDate = new Date(2020,0,11);
-            var daysSinceGov = Date.daysSince(govDate);
+        var noGov = (function () {
 
+            var currentRecordDays = 589;
+            var daysSinceGov = Date.daysSince(noGovDate);
 
             return {
                 totalDays: function () {
                     return daysSinceGov;
                 },
+                daysToRecord: function () {
+                    return Math.abs(currentRecordDays - daysSinceGov);
+                },
                 description: function () {
-                  return "Zero! Northern Ireland has had a government for  " + daysSinceNoGov + " days";
+                    return "It has been " + daysSinceGov + " days since Northern Ireland had a government. There have been " + currentRecordDays - daysSinceGov + " days since passing Belgium";
                 }
             };
         })();
 
+        var salaryCount = (function () {
+            var dailyBaseSalaryFrom2020 = 51000 / 365; // http://www.niassembly.gov.uk/your-mlas/members-salaries-and-expenses/salaries-and-expenditure-rates-2016-2021/
+
+            var salaryPerSecond = (((dailyBaseSalaryFrom2020 / 24) / 60) / 60);
+            var noOfMLAs = 90;
+
+
+            return {
+                totalPay: function () {
+                    return (((salaryPerSecond * Date.secondsSince(noGovDate))) * noOfMLAs);
+
+                },
+
+                perMLA: function () {
+                    return (this.totalPay() / noOfMLAs);
+                }
+            };
+        })();
+
+        function displayCurrency(val) {
+            return Math.round(val).toLocaleString('en-GB', {
+                style: 'currency',
+                currency: 'GBP',
+                minimumFractionDigits: 0
+            });
+        }
+
+        function updateCounter() {
+            setTimeout(function () {
+                document.getElementById("salary-container").innerHTML = displayCurrency(salaryCount.totalPay());
+                document.getElementById("mla-container").innerHTML = displayCurrency(salaryCount.perMLA());
+                updateCounter();
+            }, 1000)
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("gov-num").innerHTML = gov.totalDays();
+            document.getElementById("days-container").innerHTML = noGov.totalDays();
+            document.getElementById("record-container").innerHTML = noGov.daysToRecord();
             updateCounter();
 
-            document.querySelector("meta[property='og:description']").setAttribute('content',noGov.description());
-            document.querySelector("meta[property='og:title']").setAttribute('content',noGov.description());
+            document.querySelector("meta[property='og:description']").setAttribute('content', noGov.description());
+            document.querySelector("meta[property='og:title']").setAttribute('content', noGov.description());
         });
     </script>
 
