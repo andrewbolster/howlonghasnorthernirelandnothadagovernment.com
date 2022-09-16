@@ -19,7 +19,6 @@
             font-size: calc(300% + 1.0vw);
         }
 
-        #record-container,
         #mla-container,
         #salary-container {
             display: block;
@@ -72,13 +71,6 @@
         </p>
         <small>*Using MLA base salary</small>
 
-        <p class="record">
-            There have been
-            <span id="record-container"></span>
-            days since
-            <a href='https://en.wikipedia.org/wiki/2010%E2%80%9311_Belgian_government_formation'>passing Belgium</a>.
-        </p>
-
         <p>
             <small><a href="about.html">More info</a><br /><br /></small>
             <small><a href="https://github.com/andrewbolster/howlonghasnorthernirelandnothadagovernment.com">Built with
@@ -92,7 +84,7 @@
     <script type="text/javascript">
         "use strict";
 
-        var noGovDate = new Date(2022, 1, 3, 16,30); // Curse your Zero indexed dates....
+        var noGovDate = new Date(2022, 1, 3, 16, 30); // Curse your Zero indexed dates....
 
         Date.daysSince = function (compareDate) {
             var millisecondsInDay = 24 * 60 * 60 * 1000;
@@ -128,11 +120,8 @@
                 totalDays: function () {
                     return daysSinceGov;
                 },
-                daysToRecord: function () {
-                    return Math.abs(currentRecordDays - daysSinceGov);
-                },
                 description: function () {
-                    return "It has been " + daysSinceGov + " days since Northern Ireland had a government. There have been " + currentRecordDays - daysSinceGov + " days since passing Belgium";
+                    return "It has been " + daysSinceGov + " days since Northern Ireland had a government.";
                 }
             };
         })();
@@ -174,7 +163,6 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("days-container").innerHTML = noGov.totalDays();
-            document.getElementById("record-container").innerHTML = noGov.daysToRecord();
             updateCounter();
 
             document.querySelector("meta[property='og:description']").setAttribute('content', noGov.description());
