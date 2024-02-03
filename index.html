@@ -54,22 +54,12 @@
 
 <body>
     <div id="main">
+        <span><a href="">We have a government!</a></span>
         <p>
-            It has been
+            Northern Ireland has had a government for 
             <span id="days-container"></span>
-            days since Northern Ireland had a government.
+            days!
         </p>
-
-        <p>
-            The total MLA salary bill since then is*
-            <span id="salary-container"></span>
-        </p>
-
-        <p>That's about
-            <span id="mla-container"></span>
-            per MLA*
-        </p>
-        <small>*Using MLA base salary</small>
 
         <p>
             <small><a href="about.html">More info</a><br /><br /></small>
@@ -84,7 +74,7 @@
     <script type="text/javascript">
         "use strict";
 
-        var noGovDate = new Date(2022, 1, 3, 16, 30); // Curse your Zero indexed dates....
+        var noGovDate = new Date(2024, 1, 3, 13, 0); // Curse your Zero indexed dates....
 
         Date.daysSince = function (compareDate) {
             var millisecondsInDay = 24 * 60 * 60 * 1000;
@@ -121,7 +111,7 @@
                     return daysSinceGov;
                 },
                 description: function () {
-                    return "It has been " + daysSinceGov + " days since Northern Ireland had a government.";
+                    return "Northern Ireland has had a government for " + daysSinceGov + "days.";
                 }
             };
         })();
