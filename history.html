@@ -114,7 +114,7 @@
             margin: 0 .3em 0 1em;
         }
 
-        .legend i:first-child {
+        .legend > i:first-child {
             margin-left: 0;
             background: #fff;
         }
@@ -372,7 +372,12 @@
         };
 
         // When this site launched: the date of the first commit to this repository.
-        var LAUNCH = { date: "2018-04-26", label: "Site launched" };
+        var LAUNCH = {
+            date: "2018-04-26",
+            label: "Site launched",
+            url: "https://github.com/andrewbolster/howlonghasnorthernirelandnothadagovernment.com/pull/1",
+            sourceLabel: "GitHub: the original pull request, \u201cBasic count-up page\u201d, merged 26 April 2018"
+        };
 
         var MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
         var today = new Date();
@@ -433,7 +438,8 @@
                 '<span class="launch-dot" style="left:' + launchOffset + '%" title="' + launchText + '"></span>';
             document.getElementById("bar").setAttribute("aria-label",
                 "Timeline of periods with and without an Executive since 1999. " + launchText + ".");
-            document.getElementById("launch-legend").textContent = launchText;
+            document.getElementById("launch-legend").innerHTML = launchText + sourceLink(LAUNCH.url,
+                "Source for the launch date: " + LAUNCH.sourceLabel + " (opens in a new tab)");
 
             // A tick every five years, from the first round year after the start until today
             var ticks = "";
@@ -481,16 +487,21 @@
             }).join("");
         }
 
-        // A date, followed by a small superscript link to its source when we have one.
+        // A small superscript link to a source, opening in a new tab.
         // U+2060 stops the icon wrapping onto a line of its own; U+FE0E asks for the arrow as text, not an emoji.
+        function sourceLink(url, description) {
+            return '\u2060<a class="source" href="' + url + '" target="_blank" rel="noopener" title="' +
+                description + '" aria-label="' + description + '">\u2197\uFE0E</a>';
+        }
+
+        // A date, followed by a link to its source when we have one.
         function dateWithSource(text) {
             var source = SOURCES[text];
             if (!source) {
                 return formatDate(text);
             }
-            var description = "Source for " + formatDate(text) + ": " + source.label + " (opens in a new tab)";
-            return formatDate(text) + '⁠<a class="source" href="' + source.url + '" target="_blank" rel="noopener" title="' +
-                description + '" aria-label="' + description + '">↗︎</a>';
+            return formatDate(text) + sourceLink(source.url,
+                "Source for " + formatDate(text) + ": " + source.label + " (opens in a new tab)");
         }
 
         function drawTable() {
