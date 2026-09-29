@@ -1,0 +1,10 @@
+[build]
+  publish = "."
+
+# Netlify only serves PR previews and a *.netlify.app copy of the site, so keep them out of
+# search. The real domain is served by GitHub Pages, which ignores this file.
+# Remove this block if the custom domain ever moves to Netlify.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"
