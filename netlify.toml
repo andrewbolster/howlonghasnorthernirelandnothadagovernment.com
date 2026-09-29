@@ -1,5 +1,10 @@
 [build]
   publish = "."
+  # The README and CLAUDE.md are for people reading the repository, not the site. Delete them from
+  # Netlify's copy before it publishes. A redirect rule can't do this reliably: Netlify matches
+  # redirects case-sensitively but serves files case-insensitively, so /readme.md still worked
+  # after /README.md was blocked.
+  command = "rm -f README.md CLAUDE.md"
 
 # Netlify only serves PR previews and a *.netlify.app copy of the site, so keep them out of
 # search. The real domain is served by GitHub Pages, which ignores this file.
@@ -8,17 +13,3 @@
   for = "/*"
   [headers.values]
     X-Robots-Tag = "noindex"
-
-# The README and CLAUDE.md are for people reading the repository, not the site, so
-# don't serve them here. A forced 404 rule hides a file that is still in the published folder.
-[[redirects]]
-  from = "/README.md"
-  to = "/404.html"
-  status = 404
-  force = true
-
-[[redirects]]
-  from = "/CLAUDE.md"
-  to = "/404.html"
-  status = 404
-  force = true

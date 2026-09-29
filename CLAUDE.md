@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-A static, zero-build website with three pages: `index.html` (the counter), `about.html` (how the counting works) and `history.html` (a timeline of every period an Executive was in office). It is served by GitHub Pages, and `CNAME` sets the custom domain. There is no package.json, build step, linter or test suite. Preview by opening the HTML files in a browser, or run `python3 -m http.server`. Pull requests get a Netlify Deploy Preview (`netlify.toml` publishes the repo root as it is, marks previews `noindex`, and answers 404 for `/README.md` and `/CLAUDE.md` so they are not served there). `README.md` explains the site for visitors.
+A static, zero-build website with three pages: `index.html` (the counter), `about.html` (how the counting works) and `history.html` (a timeline of every period an Executive was in office). It is served by GitHub Pages, and `CNAME` sets the custom domain. There is no package.json, build step, linter or test suite. Preview by opening the HTML files in a browser, or run `python3 -m http.server`. Pull requests get a Netlify Deploy Preview (`netlify.toml` publishes the repo root as it is, marks previews `noindex`, and its build command deletes `README.md` and `CLAUDE.md` from Netlify's copy so they are not served there; a redirect rule was tried first, but Netlify matches redirects case-sensitively and serves files case-insensitively, so `/readme.md` still got through). `README.md` explains the site for visitors.
 
 ## When the government falls or returns
 
