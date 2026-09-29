@@ -42,7 +42,7 @@ The dates started from Wikipedia's article on the [Northern Ireland Executive](h
 
 The live site is served from this repository by GitHub Pages, and `CNAME` sets the custom domain.
 
-Pull requests get a Netlify Deploy Preview, configured by `netlify.toml`. It publishes the repository root as it is, with no build, and marks previews `noindex` so they stay out of search results.
+Pull requests get a Netlify Deploy Preview, configured by `netlify.toml`. It publishes the repository root as it is, with no build, and marks previews `noindex` so they stay out of search results. It also hides `README.md` and `CLAUDE.md` there, since those are for people reading the repository.
 
 ## Credits
 
