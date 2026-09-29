@@ -93,11 +93,11 @@
             transform: translateX(-50%);
         }
 
-        .tick:first-child {
+        .tick:first-of-type {
             transform: none;
         }
 
-        .tick:last-child {
+        .tick:last-of-type {
             transform: translateX(-100%);
         }
 
@@ -129,7 +129,7 @@
             box-sizing: border-box;
         }
 
-        /* Small on purpose, and centred on the bar. The segment it sits in has no wording of its own. */
+        /* Small on purpose. It sits in the row of year labels under the bar, level with the year text. */
         .launch-dot {
             position: absolute;
             top: 50%;
@@ -275,6 +275,12 @@
 
             .cell.launch::after {
                 inset: 22%;
+            }
+
+            /* Year labels start at their year, so the launch dot never touches one and no two run together */
+            .tick,
+            .tick:last-of-type {
+                transform: none;
             }
         }
     </style>
@@ -422,20 +428,16 @@
         }
 
         function drawBar() {
-            var launchDate = parseDate(LAUNCH.date);
             var segments = PERIODS.map(function (period) {
                 var length = daysIn(period);
-                // The launch dot sits in the middle of the bar, so the segment holding it goes without wording
-                var holdsLaunch = parseDate(period.start) <= launchDate && launchDate < parseDate(period.end);
-                var label = length >= 700 && !holdsLaunch ? "<b>" + describe(period) + "</b>" : "";
+                var label = length >= 700 ? "<b>" + describe(period) + "</b>" : "";
                 return '<span class="segment ' + (period.inOffice ? "up" : "down hatch") + '" style="flex-grow:' + length +
                     '" title="' + describe(period) + ": " + formatDate(period.start) + " to " +
                     (period.end ? formatDate(period.end) : "today") + " (" + formatNumber(length) + ' days)">' + label + "</span>";
             });
             var launchOffset = 100 * (parseDate(LAUNCH.date) - historyStart) / historyLength;
             var launchText = LAUNCH.label + ", " + formatDate(LAUNCH.date);
-            document.getElementById("bar").innerHTML = segments.join("") +
-                '<span class="launch-dot" style="left:' + launchOffset + '%" title="' + launchText + '"></span>';
+            document.getElementById("bar").innerHTML = segments.join("");
             document.getElementById("bar").setAttribute("aria-label",
                 "Timeline of periods with and without an Executive since 1999. " + launchText + ".");
             document.getElementById("launch-legend").innerHTML = launchText + sourceLink(LAUNCH.url,
@@ -448,6 +450,8 @@
                 var offset = 100 * (Date.UTC(year, 0, 1) - historyStart) / historyLength;
                 ticks += '<span class="tick" style="left:' + offset + '%">' + year + "</span>";
             }
+            // The launch dot sits in the same row as the year labels, at the date it stands for
+            ticks += '<i class="launch-dot" style="left:' + launchOffset + '%" title="' + launchText + '"></i>';
             document.getElementById("ticks").innerHTML = ticks;
         }
 
