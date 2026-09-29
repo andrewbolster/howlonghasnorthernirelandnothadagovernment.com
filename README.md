@@ -47,7 +47,7 @@ Pull requests get a Netlify Deploy Preview, configured by `netlify.toml`. It pub
 ## Credits
 
 - With thanks to [hearmecode/days-since](https://github.com/hearmecode/days-since), as credited on the homepage.
-- Built by NITD #Politics.
+- Built by [NITD #Politics](https://nitech.slack.com).
 - The font is [Oswald](https://fonts.google.com/specimen/Oswald), loaded from Google Fonts.
 
 ## Licence
