@@ -181,6 +181,30 @@
             color: #6b5f45;
         }
 
+        /* Superscript source link after a date. The arrow is a text character (Oswald has none), so use a system font. */
+        .source {
+            position: relative;
+            vertical-align: super;
+            font-family: system-ui, "Segoe UI Symbol", "Apple Symbols", sans-serif;
+            font-size: 65%;
+            line-height: 0;
+            margin-left: .25em;
+            text-decoration: none;
+        }
+
+        .source::after {
+            content: "";
+            position: absolute;
+            inset: -14px -10px -10px -10px;
+        }
+
+        .source:hover,
+        .source:focus-visible {
+            background: #6b5f45;
+            color: #fff;
+            border-radius: 2px;
+        }
+
         .n {
             text-align: right;
             padding-right: 1em;
@@ -271,6 +295,20 @@
             { start: "2022-02-03", end: "2024-02-03", inOffice: false, note: "Collapse (Protocol)" },
             { start: "2024-02-03", end: null, inOffice: true, note: "Executive restored" }
         ];
+
+        // A source for each date where one is confirmed. The end of one period and the start of the next share a date, so they share a link.
+        var SOURCES = {
+            "1999-12-02": { url: "https://archive.niassembly.gov.uk/io/summary/new_summary.htm", label: "Northern Ireland Assembly summary: devolution from 2 December 1999" },
+            "2000-02-12": { url: "https://archive.niassembly.gov.uk/io/summary/new_summary.htm", label: "Northern Ireland Assembly summary: Executive suspended on 11 February 2000, effective from midnight" },
+            "2000-05-30": { url: "https://www.legislation.gov.uk/uksi/2000/1445/introduction/made", label: "legislation.gov.uk: Restoration of Devolved Government Order 2000, in force 30 May 2000" },
+            "2002-10-14": { url: "https://www.legislation.gov.uk/uksi/2002/2574/introduction/made", label: "legislation.gov.uk: Suspension of Devolved Government Order 2002, made 14 October, in force 15 October" },
+            "2007-05-08": { url: "https://www.legislation.gov.uk/uksi/2007/1397/introduction/made", label: "legislation.gov.uk: Restoration of Devolved Government Order 2007, in force 8 May 2007" },
+            "2011-03-24": { url: "https://www.niassembly.gov.uk/assembly-business/office-of-the-speaker/former-northern-ireland-assembly-speakers/", label: "Northern Ireland Assembly: third mandate dissolved on 24 March 2011" },
+            "2017-01-16": { url: "https://www.irishtimes.com/news/politics/martin-mcguinness-resigns-as-deputy-first-minister-1.2930300", label: "Irish Times: McGuinness resigns on 9 January, with seven days to replace him" },
+            "2020-01-11": { url: "https://www.rte.ie/news/ireland/2020/0111/1105717-northern-ireland-politics/", label: "RTÉ: ministers appointed as the Assembly resumes, 11 January 2020" },
+            "2022-02-03": { url: "https://www.rte.ie/news/ulster/2022/0203/1277530-paul-givan/", label: "RTÉ: Paul Givan resigns as First Minister, 3 February 2022" },
+            "2024-02-03": { url: "https://www.rte.ie/news/ulster/2024/0203/1430314-stormont-assembly-reax/", label: "RTÉ: power-sharing returns, 3 February 2024" }
+        };
 
         var MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
         var today = new Date();
@@ -365,9 +403,21 @@
             }).join("");
         }
 
+        // A date, followed by a small superscript link to its source when we have one.
+        // U+2060 stops the icon wrapping onto a line of its own; U+FE0E asks for the arrow as text, not an emoji.
+        function dateWithSource(text) {
+            var source = SOURCES[text];
+            if (!source) {
+                return formatDate(text);
+            }
+            var description = "Source for " + formatDate(text) + ": " + source.label + " (opens in a new tab)";
+            return formatDate(text) + '⁠<a class="source" href="' + source.url + '" target="_blank" rel="noopener" title="' +
+                description + '" aria-label="' + description + '">↗︎</a>';
+        }
+
         function drawTable() {
             document.getElementById("rows").innerHTML = PERIODS.slice().reverse().map(function (period) {
-                return '<tr><td>' + formatDate(period.start) + "</td><td>" + (period.end ? formatDate(period.end) : "now") +
+                return '<tr><td>' + dateWithSource(period.start) + "</td><td>" + (period.end ? dateWithSource(period.end) : "now") +
                     '</td><td class="n">' + formatNumber(daysIn(period)) + '</td><td class="status ' +
                     (period.inOffice ? "up" : "down") + '">' + describe(period) + '</td><td class="note">' + period.note + "</td></tr>";
             }).join("");
