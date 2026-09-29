@@ -14,7 +14,7 @@ It is a bit of fun and not the paper of record. If you'd like to argue with a da
 | `about.html` | How the counting works, the updates each time the government has fallen or returned, and links to related events. |
 | `history.html` | A timeline, a year-by-month grid and a table of every period since 1999 when an Executive was in office or not, with a source link on each date. |
 
-Each page is a single "hand-written" HTML file with its own inline CSS and JavaScript. There is no build step, no package manager and no test suite.
+Each page is a single ["hand-written"](CLAUDE.md) HTML file with its own inline CSS and JavaScript. There is no build step, no package manager and no test suite.
 
 ## Running it locally
 
