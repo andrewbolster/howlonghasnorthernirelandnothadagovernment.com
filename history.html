@@ -38,6 +38,7 @@
 
         /* Timeline bar: one segment per period, its width set by its length in days */
         #bar {
+            position: relative;
             display: flex;
             height: 36px;
             margin: 1.5em 0 0;
@@ -116,6 +117,55 @@
         .legend i:first-child {
             margin-left: 0;
             background: #fff;
+        }
+
+        /* Marker for when this site launched: a ringed white dot, readable on both white and hatched areas */
+        .launch-dot,
+        .cell.launch::after,
+        .legend i.launch-key {
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #6b5f45;
+            box-sizing: border-box;
+        }
+
+        /* Small on purpose, and centred on the bar. The segment it sits in has no wording of its own. */
+        .launch-dot {
+            position: absolute;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            margin: -4px 0 0 -4px;
+            border-width: 1.5px;
+        }
+
+        .launch-dot::after {
+            content: "";
+            position: absolute;
+            inset: -10px;
+        }
+
+        .cell.launch {
+            position: relative;
+        }
+
+        .cell.launch::after {
+            content: "";
+            position: absolute;
+            inset: 34%;
+            border-width: 1px;
+        }
+
+        .legend i.launch-key {
+            width: .55em;
+            height: .55em;
+            border-width: 1.5px;
+            vertical-align: .05em;
+        }
+
+        .legend .launch-legend {
+            white-space: nowrap;
+            opacity: .85;
         }
 
         /* Year grid: one column per year, one row per month */
@@ -222,6 +272,10 @@
             #years span.every2:not(.every4) {
                 visibility: hidden;
             }
+
+            .cell.launch::after {
+                inset: 22%;
+            }
         }
     </style>
 
@@ -241,7 +295,7 @@
 
         <div id="bar" role="img" aria-label="Timeline of periods with and without an Executive since 1999"></div>
         <div id="ticks"></div>
-        <p class="legend"><i></i>Executive in office <i class="hatch"></i>No Executive</p>
+        <p class="legend"><i></i>Executive in office <i class="hatch"></i>No Executive <span class="launch-legend"><i class="launch-key"></i><span id="launch-legend">Site launched</span></span></p>
 
         <h2>Year by year</h2>
         <div id="gridwrap">
@@ -317,6 +371,9 @@
             "2024-02-03": { url: "https://www.rte.ie/news/ulster/2024/0203/1430314-stormont-assembly-reax/", label: "RTÉ: power-sharing returns, 3 February 2024" }
         };
 
+        // When this site launched: the date of the first commit to this repository.
+        var LAUNCH = { date: "2018-04-26", label: "Site launched" };
+
         var MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
         var today = new Date();
         var historyStart = parseDate(PERIODS[0].start);
@@ -360,14 +417,23 @@
         }
 
         function drawBar() {
+            var launchDate = parseDate(LAUNCH.date);
             var segments = PERIODS.map(function (period) {
                 var length = daysIn(period);
-                var label = length >= 700 ? "<b>" + describe(period) + "</b>" : "";
+                // The launch dot sits in the middle of the bar, so the segment holding it goes without wording
+                var holdsLaunch = parseDate(period.start) <= launchDate && launchDate < parseDate(period.end);
+                var label = length >= 700 && !holdsLaunch ? "<b>" + describe(period) + "</b>" : "";
                 return '<span class="segment ' + (period.inOffice ? "up" : "down hatch") + '" style="flex-grow:' + length +
                     '" title="' + describe(period) + ": " + formatDate(period.start) + " to " +
                     (period.end ? formatDate(period.end) : "today") + " (" + formatNumber(length) + ' days)">' + label + "</span>";
             });
-            document.getElementById("bar").innerHTML = segments.join("");
+            var launchOffset = 100 * (parseDate(LAUNCH.date) - historyStart) / historyLength;
+            var launchText = LAUNCH.label + ", " + formatDate(LAUNCH.date);
+            document.getElementById("bar").innerHTML = segments.join("") +
+                '<span class="launch-dot" style="left:' + launchOffset + '%" title="' + launchText + '"></span>';
+            document.getElementById("bar").setAttribute("aria-label",
+                "Timeline of periods with and without an Executive since 1999. " + launchText + ".");
+            document.getElementById("launch-legend").textContent = launchText;
 
             // A tick every five years, from the first round year after the start until today
             var ticks = "";
@@ -383,6 +449,7 @@
             var firstYear = historyStart.getUTCFullYear();
             var lastYear = today.getUTCFullYear();
             var columns = "repeat(" + (lastYear - firstYear + 1) + ",minmax(0,1fr))";
+            var launchDate = parseDate(LAUNCH.date);
             var cells = "";
             var labels = "";
 
@@ -392,8 +459,12 @@
                     var moment = new Date(Math.min(Date.UTC(year, month, 15), today.getTime()));
                     var visible = moment >= historyStart && monthStart <= today;
                     var kind = !visible ? "none" : isInOffice(moment) ? "up" : "down hatch";
-                    cells += '<i class="cell ' + kind + '" title="' +
-                        monthStart.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" }) + '"></i>';
+                    var title = monthStart.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
+                    if (year === launchDate.getUTCFullYear() && month === launchDate.getUTCMonth()) {
+                        kind += " launch";
+                        title += " (" + LAUNCH.label + ", " + formatDate(LAUNCH.date) + ")";
+                    }
+                    cells += '<i class="cell ' + kind + '" title="' + title + '"></i>';
                 }
             }
             for (var y = firstYear; y <= lastYear; y++) {
