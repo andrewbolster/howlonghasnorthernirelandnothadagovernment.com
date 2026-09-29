@@ -6,112 +6,83 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-A static, zero-build website (served via GitHub Pages; `CNAME` sets the custom domain) with two hand-written pages: `index.html` and `about.html`. There is no package.json, build step, linter, or test suite. To preview, open the HTML files in a browser or run `python3 -m http.server`.
+A static, zero-build website with three pages: `index.html` (the counter), `about.html` (how the counting works) and `history.html` (a timeline of every period an Executive was in office). It is served by GitHub Pages, and `CNAME` sets the custom domain. There is no package.json, build step, linter or test suite. Preview by opening the HTML files in a browser, or run `python3 -m http.server`. Pull requests get a Netlify Deploy Preview (`netlify.toml` publishes the repo root as it is and marks previews `noindex`). `README.md` explains the site for visitors.
+
+## When the government falls or returns
+
+Three places need editing, and they are separate:
+
+1. `index.html`: change `noGovDate` (months are zero-indexed, so February is `1`) and the status wording at the top.
+2. `history.html`: end the current period in the `PERIODS` array and add a new one, and add a `SOURCES` entry for the new date.
+3. `about.html`: add a dated update as a new `<h1>` at the top.
 
 ## Architecture
 
-- `index.html` holds all CSS and JS inline. The script counts days since `noGovDate` (`new Date(2024, 1, 3, 13, 0)`, months are zero-indexed, so this is 3 Feb 2024) via `Date.daysSince`, and fills `#days-container` on `DOMContentLoaded`. It also rewrites the `og:title` and `og:description` meta tags with the current count.
-- The salary code (`salaryCount`, `updateCounter`, `displayCurrency`) is intentionally kept but currently unused. It targets `#salary-container` and `#mla-container`, which are not in the markup. `updateCounter` now returns quietly when neither element exists, and updates whichever exist if they are restored (tested by injecting both elements). Don't remove it unless asked.
-- `about.html` is static prose. It has a dated "Update" section at the top, then the counting methodology (the Belgium 589-day record comparison) and events. New developments are added as a new `<h1>` update at the top.
-- Both pages carry their own copy of the styling (`index.html` is pink `#dd9ca6`, `about.html` is blue `#9ca6dd`) and load the Oswald font from Google Fonts. Both include the same Google Analytics snippet.
+- **`index.html`** holds all CSS and JS inline. The script counts days since `noGovDate` with `Date.daysSince` and fills `#days-container` on `DOMContentLoaded`. It also rewrites the `og:title` and `og:description` meta tags with the current count.
+- **The salary code** (`salaryCount`, `updateCounter`, `displayCurrency`) is intentionally kept but unused. It targets `#salary-container` and `#mla-container`, which are not in the markup, and `updateCounter` returns quietly when neither exists. Don't remove it unless asked.
+- **`about.html`** is static prose: dated updates (newest first), the counting methodology (the Belgium 589-day comparison) and events.
+- **`history.html`** draws everything in the browser from data at the top of its script (see "History page" below).
+- Every page carries its own inline copy of the CSS, so **a visual change usually has to be made in every file**, and the copies are not identical. Find things with `grep -n` rather than trusting line numbers.
+- All pages load the Oswald font from Google Fonts and include the same Google Analytics 4 snippet (measurement ID `G-N73RZEJ1WN`) at the end of `<body>`.
 
-## Visual style (verified by rendering both pages at 1280px and 390px)
+## Shared conventions
 
-Match this exactly when adding or changing anything. Values are computed styles from a real render, not guesses.
+- **Header line:** every page starts `#main` with `<p class="nav">Home · About · History</p>`, with the current page as plain text and the other two as links. About and History use 80% (about 16px); the homepage uses 45% of its larger base, left-aligned, so it also comes out at about 16px. Keep the same text, position and size if you add a page.
+- **Doctype and charset:** every page starts `<!DOCTYPE html>`. Only `history.html` has `<meta charset="utf-8">`; on the other two, write accented characters as entities (`&eacute;`).
+- **Head boilerplate to copy:** the title (`Days since Northern Ireland had a government`, with ` : About` or ` : History` added), the Open Graph tags, the `viewport` meta, the Oswald `<link>`, an inline `<style>`, and the analytics snippet.
+- **Adding a page:** copy `about.html` for text or `history.html` for charts, pick a new pastel and darker link colour (below), and add it to the header line on every page.
 
-**Overall look:** one flat, pastel colour block with white Oswald text and a single muted, darker link colour. There are no images, borders, shadows, cards, buttons, nav bar or footer element. The pages have almost no chrome, and new content should stay that way.
+## Visual style
 
-**Structure (both pages):**
-- The whole page is one `<div id="main">` inside a bare `<body>`. Only `#main` is styled. `body` has no CSS, so the browser's default 8px margin shows as a thin white border around the block. Text outside `#main` would render in Times.
-- `#main { width: 80%; padding: 10%; color: #fff; font-family: 'Oswald', sans-serif; }`. This is content-box, so 80% plus 10% padding on each side equals 100% of the body width. Padding is percentage-based, so it is about 126px each side at desktop and about 37px on a phone.
-- The block's height comes from its content, not the viewport. A strip of white shows below it on tall windows. Don't add `min-height` or `100vh` unless asked.
-- There is no `max-width`, no `line-height` (browser default `normal`) and no CSS reset. Spacing is browser-default margins on `p`, `h1`, `h2` and `ul`.
-- Both files start with `<!DOCTYPE html>` and so render in standards mode (they were in quirks mode until the 2026 update). The switch changes line-box height for lines that contain only `<small>` text, which is why the homepage footer paragraph has its own `.footer` class. Any new `<small>` block at the paragraph level needs the same treatment to keep the small, tight line spacing. Re-render the pages and compare geometry before and after any change like this.
+Match this exactly when adding or changing anything. The values are computed styles from real renders at 1280px and 390px.
 
-**Colours (the two pages are a matched pair):**
+**Overall look:** one flat, pastel colour block with white Oswald text and one muted, darker link colour. There are no images, borders, shadows, cards or buttons. The only chrome is the header line at the top and, on the homepage, a small credits footer. New content should stay that plain.
 
-| | `index.html` | `about.html` |
-|---|---|---|
-| Background | `#dd9ca6` (dusty pink) | `#9ca6dd` (periwinkle) |
-| Link colour | `#7d4c56` (mauve) | `#4c567d` (slate) |
-| Text | `#fff` | `#fff` |
+**Structure:**
+- The page is one `<div id="main">` inside a bare `<body>`. Only `#main` is styled, so the browser's default 8px body margin shows as a thin white border, and text outside `#main` would render in Times.
+- `#main` is `width: 80%; padding: 10%` (content-box, so it fills the body width) with `color: #fff` and `font-family: 'Oswald', sans-serif`. The padding is a percentage, about 126px each side on desktop and 37px on a phone.
+- The block's height comes from its content, not the viewport, so a strip of white can show below it. Don't add `min-height` or `100vh` unless asked.
+- There is no `max-width`, no `line-height` (browser default) and no CSS reset. Spacing is browser-default margins on `p`, `h1`, `h2` and `ul`.
+- The pages render in standards mode. That changes line-box height for lines that hold only `<small>` text, which is why the homepage footer paragraph has its own `.footer` class (50% size, `2em` bottom margin, with `<small>` inside it reset to 100%). Any new paragraph of `<small>` text needs the same treatment. Re-render and compare geometry after a change like this.
 
-- The blue pair is the pink pair with the RGB channels rotated. `#dd9ca6` becomes `#9ca6dd` and `#7d4c56` becomes `#4c567d`. A new page should follow the same rule: a pastel background, a darker link colour of the same hue, and white text.
-- Links use the browser default underline. There is no hover style.
-- White on the pastel backgrounds is low contrast. I did not measure it. Treat this as existing style and flag it before changing it.
+**Colours (each page is a pastel with a darker link colour of the same hue and white text):**
 
-**Typography:**
-- Font: Oswald, a condensed sans-serif, loaded with `<link href='https://fonts.googleapis.com/css?family=Oswald' ...>`. That URL requests weight 400 only, so the bold h1 and h2 on `about.html` are browser-synthesised bold. If you add a real bold weight (`css?family=Oswald:700`), the headings will change appearance, so ask first.
-- `index.html`, centred, base `2.25em` (36px):
-  - `#days-container` is `display: block`, `calc(300% + 1vw)` (about 121px at 1280px, 112px at 390px). It is the visual focus.
-  - The intro line and the "We have a government!" link are 36px.
-  - `<small>` is 50% (18px) for the "More info", credits and attribution lines.
-  - `p` margins are 36px, giving airy vertical spacing.
-  - The layout is one centred stack: link, sentence, huge number, "days!", small links.
-- `about.html`, left-aligned, base `1.25em` (20px):
-  - `h1` is 40px bold (one per dated update, newest first) and `h2` is 30px bold.
-  - `p`, `li` and links are 20px, with 20px paragraph margins.
-  - Lists are default bullets. Emphasis uses `<strong>` and `<em>`.
-  - The text column is about 1010px wide on desktop.
-
-**Responsive behaviour:** there are no media queries that take effect. It is a fluid layout, and both pages fit a 390px viewport without horizontal scroll (checked `scrollWidth == clientWidth`). The `@media (min-width: 575px) { article { ... } }` rule in `about.html` is dead code, because no `<article>` element exists. The unused `.record` class and the `#mla-container` and `#salary-container` rules in `index.html` are also leftovers.
-
-**Voice of the copy:** short, plain and neutral. `about.html` states that the site is "purely informational, without commentary". The homepage uses an exclamation ("days!"). Dates are written like "Saturday Feb 3rd at 1400 hours", and each update is a bold heading followed by a short factual paragraph with a linked source. Keep new content in this register and add sources as links.
-
-**Head boilerplate to copy:** title `Days since Northern Ireland had a government` (about page adds ` : About`), the Open Graph tags, `viewport` meta, the Oswald `<link>`, inline `<style>`, and the Google Analytics snippet at the end of `<body>`.
-
-## Where each style lives in the code
-
-Line numbers are as of this writing. Re-check with `grep -n` before editing, because they drift. Both files keep all CSS in one inline `<style>` block in `<head>` and there is no shared stylesheet. **A visual change usually has to be made in both files**, and the two copies are not identical.
-
-| Style entity | `index.html` | `about.html` | Notes |
+| | `index.html` | `about.html` | `history.html` |
 |---|---|---|---|
-| Doctype | line 1 | line 1 | `<!DOCTYPE html>`. |
-| Oswald `<link>` | line 16 | line 15 | Weight 400 only. Change the URL in both files. |
-| `<style>` block | lines 17-62 | lines 16-47 | |
-| `#main` (background, width, padding, font, size, alignment) | 29-37 | 17-25 | Differs per page: `#dd9ca6`, centred, `2.25em` versus `#9ca6dd`, left, `1.25em`. |
-| `a` (link colour) | 45-47 | 33-35 | `#7d4c56` versus `#4c567d`. This is the only link rule, with no hover or visited styles. |
-| `small` | 49-51 | 37-39 | `font-size: 50%`. It is only used on `index.html` (lines 76-81), and the rule is dead in `about.html`. |
-| `.footer`, `.footer small` | 54-61 | not present | Homepage footer paragraph is sized at 50% with a `2em` bottom margin, and `<small>` inside it is reset to 100%. Together they reproduce the old quirks-mode spacing. |
-| `#days-container` (big number) | 18-21 | not present | `display: block; font-size: calc(300% + 1.0vw)`. It is a `<span>` at line 71 filled by JS, so keep the span and id. |
-| `#mla-container`, `#salary-container` | 23-27 | not present | Unused: no matching elements exist (the JS handles that quietly). |
-| `.record` | 39-43 | 27-31 | Dead in both files. |
-| `@media (min-width: 575px) { article {...} }` | not present | 40-46 | Dead: no `<article>` element. The obvious use would be a `max-width: 550px` centred column, but it doesn't apply today. |
-| Page wrapper | `<div id="main">` at 67 | `<div id="main">` at 52 | Everything visible goes inside it. |
+| Background | `#dd9ca6` (dusty pink) | `#9ca6dd` (periwinkle) | `#d4c5a9` (warm sand) |
+| Link colour | `#7d4c56` (mauve) | `#4c567d` (slate) | `#6b5f45` (umber) |
 
-Markup patterns to reuse:
-- **Homepage headline link:** `<span><a href="">We have a government!</a></span>` (`index.html:68`), followed by the sentence and the `#days-container` span (69-73), then the `<p class="footer">` of `<small>` lines (75-82). Add new footer or credit lines as another `<small>` in that paragraph, matching lines 76-81.
-- **`about.html` update entry:** an `<h1>YYYY Update: Title</h1>` followed by plain text or `<p>`, with the newest entry first. The first `<h1>` is at line 53 and the 2022 entry at 59. Add a new one directly under `<div id="main">` (line 52). Sub-sections use `<h2>` (line 66) and the "Events" section is an `<h1>` (line 102).
-- **Bullet lists and emphasis:** the NI/Belgium dates list in `about.html` (lines 83-89) uses `<ul><li>` with `<strong>` for the date and `<a>` for "(more)". Reuse that pattern for dated facts with sources. The two `<li>` items (lines 86 and 88) end with stray `</p>` tags that have no opening `<p>`. Browsers tolerate this, so don't copy the stray tags into new markup.
-- **Update entries have no `<p>` wrapper:** the 2024 and 2022 entries (lines 54-57 and 60-64) are bare text directly under the `<h1>`. Later sections use `<p>`. Either renders the same, but prefer `<p>` for new prose.
-- **`<title>`:** `index.html:5`, `about.html:5` (` : About` suffix). Open Graph tags are at lines 8-12 of both files. `index.html` overwrites `og:title` and `og:description` from JS at lines 181-182.
-- **Analytics snippet:** the last block in `<body>` (`index.html:186-193`, `about.html:116-123`). A new page needs a copy of it.
-- **Counting logic:** `noGovDate` is at `index.html:88`. It is the only JS that needs to change when the government status changes, together with the wording at lines 68-72.
+- The blue is the pink with the RGB channels rotated once. Sand is not a rotation; it was chosen because green and orange carry political associations in Northern Ireland and should be avoided, and other pastels sat too close to the pink or blue.
+- Links use the browser default underline, with no hover style (apart from the small source arrows on the history page).
+- White text on these pastels is low contrast. It is the existing style, so flag it before changing it.
 
-If you add a new page, copy `about.html` for text pages (left-aligned) or `index.html` for a big-number style page. Rotate the colour pair as described above, and link it from `index.html` next to "More info" (line 76).
+**Typography:** Oswald, a condensed sans-serif, loaded with `css?family=Oswald`. That requests weight 400 only, so the bold `h1` and `h2` are browser-synthesised bold. Adding a real bold weight changes how the headings look, so ask first.
+- `index.html`: centred, base `2.25em` (36px). `#days-container` is `display: block` at `calc(300% + 1vw)` and is the visual focus. `<small>` is 50% (18px) for the credits. `p` margins are 36px. It is one centred stack: link, sentence, huge number, "days!", small links.
+- `about.html` and `history.html`: left-aligned, base `1.25em` (20px), `h1` 40px bold, `h2` 30px bold, `p`, `li` and links 20px, tables 16px. The text column is about 1010px wide on desktop.
 
-## History page (`history.html`, added in PR #30)
+**Responsive behaviour:** the layout is fluid and every page fits a 390px viewport without sideways scrolling. `history.html` also has a `@media (max-width: 600px)` block (see below). Leftovers that do nothing: the `.record` rule (both files), the `@media (min-width: 575px) { article {...} }` rule and `small` rule in `about.html`, and the `#mla-container` and `#salary-container` rules in `index.html`.
 
-- Third page, in warm sand: `#d4c5a9` background, `#6b5f45` links, white text, hatched "No Executive". The colour rule (a pastel with a darker link colour of the same hue) is the same, but sand is not a channel rotation of pink and blue. Green and orange are ruled out for political reasons, and lavender was rejected as too close to the pink.
-- Everything is drawn in the browser from the `PERIODS` array at the top of the page's script. Each entry has `start`, `end` (`null` for the current period), `inOffice` and `note`. The summary, timeline bar, year grid and table are all generated from it, and "today" is the visitor's clock. **When the government collapses or is restored, edit `PERIODS` (end the current period, add a new one) and also `noGovDate` in `index.html`.** They are separate.
-- Source links: the `SOURCES` object in `history.html` maps a boundary date (`"YYYY-MM-DD"`, same string as in `PERIODS`) to `{ url, label }`. A date with an entry gets a superscript `↗︎` link (U+2197 plus the text-presentation selector, system font because Oswald has no arrows) in both the "To" cell of one row and the "From" cell of the next. Every date now has an entry, but not all are equally strong. The user chose to keep the 2011 and 2016 election gaps as they were ("a bit of fun, not the paper of record"). The weaker links are: 16 May 2011 (Irish Times, published 17 May 2011 at 01:00, about the ministers' vote), and 16 May 2016 and 26 May 2016 (Wikipedia pages for the 4th and 5th Executives; the 4th page's own infobox says 6 May 2016, and the Assembly minutes show the departmental ministers took office on 25 May 2016). Research found the First Minister and deputy First Minister stayed in office through both elections (Northern Ireland Act 1998 s.16A before 2022), which is why the user was offered merging the gaps; they declined. BBC pages could not be fetched from the sandbox, so no BBC link is confirmed.
-- Launch marker: `LAUNCH` in `history.html` (`{ date: "2018-04-26", label: "Site launched" }`, the date of the first commit to this repo). It shows as a small ringed dot on the top edge of the timeline bar, a smaller dot in that month's grid cell, and a muted legend line. The user wants it "pretty subtle; we're not the story", so keep it small, with no text label on the charts themselves.
-- Year ticks are generated every five years, and the grid labels every second year (every fourth on phones), so nothing is hardcoded to a year.
-- It uses `@media (max-width: 600px)` for phones, with the in-bar words and the Note column hidden. The `about.html` line numbers in the table above are +2 below `<div id="main">` because of the history link added there. The homepage footer link is on the `More info` line.
-- The page has `<meta charset="utf-8">`. The other two pages do not, so use `&eacute;` style entities for accented characters there.
-- Dates come from Wikipedia's Northern Ireland Executive article. Not independently confirmed: the 1999 start, the 2011 election dates and the 2016 end of the Executive. The homepage's PR previews come from Netlify (`netlify.toml`).
+**Voice of the copy:** short, plain and neutral. `about.html` says the site is "purely informational, without commentary". The homepage uses an exclamation ("days!"). Dates read like "Saturday Feb 3rd at 1400 hours". Each update is a bold heading followed by a short factual paragraph with a linked source. Keep new content in that register and add sources as links.
 
-## Rendering the site to check changes
+**Markup habits on `about.html`:** an update is an `<h1>YYYY Update: Title</h1>` followed by text (the two existing updates are bare text with no `<p>`; prefer `<p>` for new prose). Dated facts use `<ul><li>` with `<strong>` for the date and `<a>` for "(more)". The two `<li>` items in the NI/Belgium list end in stray `</p>` tags that browsers tolerate, so don't copy them.
 
-Chromium is preinstalled (`/opt/pw-browsers/chromium-1194/chrome-linux/chrome`) and Playwright is installed globally for Node (`require(execSync('npm root -g') + '/playwright')`).
-- Launch with `executablePath` set to the Chromium above, `args: ['--no-sandbox']`, `proxy: { server: process.env.HTTPS_PROXY }` and `ignoreHTTPSErrors: true`. Without the proxy, the Google Fonts request fails and text silently falls back to a default sans-serif.
-- Set the viewport explicitly (1280x900 and 390x844) and wait about 2.5s for the font. Don't use `chrome --headless --screenshot` for phone widths, because headless Chrome enforces a minimum window width of about 500px and crops the image.
-- `document.fonts.check('16px Oswald')` returns true even when no font loaded. Check that `[...document.fonts]` contains an Oswald face with status `loaded`.
-- Analytics requests fail in the sandbox, which is expected.
+## History page
 
-## Notes
+- **Data:** `PERIODS` is an array of `{ start, end, inOffice, note }` (`end` is `null` for the current period, dates are `"YYYY-MM-DD"`). The summary line, timeline bar, year-by-month grid and table are all generated from it, using the visitor's clock as "today", so the current period and the statistics grow on their own. Year ticks are generated every five years and grid labels every second year (every fourth on phones), so nothing is fixed to a particular year.
+- **Look:** three views of the same data: a timeline bar (white for "In office", hatched for "No Executive", so meaning never depends on colour alone), a grid with one column per year and one row per month, and a full table. On phones the in-bar words and the Note column are hidden.
+- **Source links:** `SOURCES` maps a boundary date (the same string used in `PERIODS`) to `{ url, label }`. A date with an entry gets a superscript arrow (code point U+2197 followed by U+FE0E, which forces the text form rather than an emoji; drawn in a system font, because Oswald has no arrows) after it in both the "To" cell of one row and the "From" cell of the next, since they are the same event. `sourceLink()` builds every such link, including the launch legend's. Links open in a new tab with a descriptive `aria-label`.
+- **Launch marker:** `LAUNCH` (`{ date: "2018-04-26", ... }`, the first commit to this repository) is drawn as a small ringed dot centred on the timeline bar, a smaller dot in that month's grid cell, and a muted legend line linking to the original pull request. Keep it small and quiet; the history of the Executive is the subject, not the repository. The bar segment the dot sits in has no wording of its own, because they would overlap.
+- **Data caveats:** dates come from Wikipedia's article on the Northern Ireland Executive, checked where possible against legislation.gov.uk, the Northern Ireland Assembly's pages and news reports. The weakest links are 16 May 2011 (an Irish Times report published at 01:00 on 17 May), and 16 May and 26 May 2016 (Wikipedia pages; the 4th Executive page's own infobox says 6 May 2016, and Assembly minutes show the departmental ministers taking office on 25 May 2016). The 2011 and 2016 "election period" gaps are a deliberate simplification: research suggests the First Minister and deputy First Minister stayed in office through both elections under the Northern Ireland Act 1998 as it stood before 2022, and only the departmental posts were briefly empty. That reading was not checked in full. No BBC links are used, because those pages could not be fetched when the sources were checked.
 
-- When the government status changes (collapse or restoration), update `noGovDate` and the "We have a government!" / status wording in `index.html`, and add an update entry in `about.html`.
-- **Do not push until the user says to.** Every push to a PR branch triggers a Netlify deploy preview, so batch changes into local commits and push once on request. Don't open PRs or push branches unprompted. Local commits are fine.
-- All three pages share the same header line (`<p class="nav">`: `Home · About · History`, current page unlinked, about 16px at the top of `#main`). Keep it identical if you add a page.
+## Checking changes
+
+Render the pages in headless Chromium (for example with Playwright) at 1280x900 and 390x844, and check that nothing scrolls sideways (`scrollWidth == clientWidth`) and that there are no script errors.
+- Wait for the Oswald font before judging layout. `document.fonts.check('16px Oswald')` returns true even when no font loaded, so check that an Oswald face in `document.fonts` has status `loaded`. If the Google Fonts request is blocked (for example behind a proxy), text silently falls back to a default sans-serif.
+- Set the viewport explicitly. `chrome --headless --screenshot` enforces a minimum window width of about 500px and crops phone-width shots.
+- Compare page geometry (for example the height of `#main`) before and after a change to spot layout drift.
+- Analytics requests fail in a sandbox, which is expected.
+
+## Workflow
+
+- Every push to a PR branch triggers a Netlify Deploy Preview, so batch changes into a few local commits and push once. Ask before pushing or opening a PR.
 - `CLAUDE.md` is tracked and public, and the README links to it. Write it so anyone reading the repository can follow it, not only Claude.
