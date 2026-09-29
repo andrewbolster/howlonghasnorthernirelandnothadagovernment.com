@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -48,6 +49,16 @@
         small {
             font-size: 50%;
         }
+
+        /* Size the footer paragraph itself, so its line boxes are small-text height in standards mode */
+        .footer {
+            font-size: 50%;
+            margin-bottom: 2em; /* 36px, as before the paragraph was shrunk */
+        }
+
+        .footer small {
+            font-size: 100%;
+        }
     </style>
 
 </head>
@@ -61,7 +72,7 @@
             days!
         </p>
 
-        <p>
+        <p class="footer">
             <small><a href="about.html">More info</a><br /><br /></small>
             <small><a href="https://github.com/andrewbolster/howlonghasnorthernirelandnothadagovernment.com">Built with
                     &hearts; by NITD #Politics</a></br></br></small>
@@ -144,9 +155,21 @@
         }
 
         function updateCounter() {
+            var salaryContainer = document.getElementById("salary-container");
+            var mlaContainer = document.getElementById("mla-container");
+
+            // The salary counters are currently not part of the page, so there is nothing to update
+            if (!salaryContainer && !mlaContainer) {
+                return;
+            }
+
             setTimeout(function () {
-                document.getElementById("salary-container").innerHTML = displayCurrency(salaryCount.totalPay());
-                document.getElementById("mla-container").innerHTML = displayCurrency(salaryCount.perMLA());
+                if (salaryContainer) {
+                    salaryContainer.innerHTML = displayCurrency(salaryCount.totalPay());
+                }
+                if (mlaContainer) {
+                    mlaContainer.innerHTML = displayCurrency(salaryCount.perMLA());
+                }
                 updateCounter();
             }, 1000)
         }
