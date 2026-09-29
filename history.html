@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Days since Northern Ireland had a government : History</title>
+
+    <!-- Opengraph -->
+    <meta property="og:site_name" content="How long has Northern Ireland not had a government?">
+    <meta property="og:description" content="How long has Northern Ireland not had a government?">
+    <meta property="og:title" content="How long has Northern Ireland not had a government?">
+    <meta property="og:url" content="https://howlonghasnorthernirelandnothadagovernment.com">
+    <meta property="og:type" content="website">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+    <style>
+        #main {
+            --page: #d4c5a9;
+            --link: #6b5f45;
+            width: 80%;
+            color: #fff;
+            padding: 10%;
+            font-family: 'Oswald', sans-serif;
+            background-color: var(--page);
+            text-align: left;
+            font-size: 1.25em;
+        }
+
+        a {
+            color: #6b5f45;
+        }
+
+        .nav {
+            font-size: 75%;
+            margin: 0;
+        }
+
+        /* Timeline bar: one segment per period, its width set by its length in days */
+        #bar {
+            display: flex;
+            height: 36px;
+            margin: 1.5em 0 0;
+        }
+
+        .segment {
+            flex-basis: 0;
+            min-width: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 65%;
+            line-height: 1;
+        }
+
+        .segment.up,
+        .cell.up {
+            background: #fff;
+        }
+
+        .segment.up b {
+            color: #6b5f45;
+        }
+
+        .segment b {
+            font-weight: 400;
+            padding: .15em .45em;
+        }
+
+        .segment.down b {
+            background: #6b5f45;
+            color: #fff;
+        }
+
+        /* No Executive is hatched, so it never depends on colour alone */
+        .hatch {
+            background: repeating-linear-gradient(135deg, #6b5f45 0 3px, transparent 3px 7px);
+            box-shadow: inset 0 0 0 1px #6b5f45;
+        }
+
+        #ticks {
+            position: relative;
+            height: 1.4em;
+            font-size: 70%;
+            margin-bottom: .5em;
+        }
+
+        .tick {
+            position: absolute;
+            transform: translateX(-50%);
+        }
+
+        .tick:first-child {
+            transform: none;
+        }
+
+        .tick:last-child {
+            transform: translateX(-100%);
+        }
+
+        .legend {
+            font-size: 75%;
+            margin: .5em 0 1.5em;
+        }
+
+        .legend i {
+            display: inline-block;
+            width: 1.4em;
+            height: .8em;
+            vertical-align: -.05em;
+            margin: 0 .3em 0 1em;
+        }
+
+        .legend i:first-child {
+            margin-left: 0;
+            background: #fff;
+        }
+
+        /* Year grid: one column per year, one row per month */
+        #gridwrap {
+            display: grid;
+            grid-template-columns: 1.2em minmax(0, 1fr);
+            gap: 0 .4em;
+            margin-top: 1em;
+        }
+
+        #months {
+            display: grid;
+            grid-template-rows: repeat(12, 1fr);
+            font-size: 55%;
+            text-align: right;
+        }
+
+        #grid {
+            display: grid;
+            gap: 2px;
+        }
+
+        .cell {
+            display: block;
+            aspect-ratio: 1;
+        }
+
+        .cell.none {
+            background: none;
+            box-shadow: none;
+        }
+
+        #years {
+            grid-column: 2;
+            display: grid;
+            font-size: 60%;
+            margin-top: .3em;
+        }
+
+        #years span {
+            white-space: nowrap;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 80%;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: .35em .6em .35em 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .45);
+        }
+
+        th {
+            font-weight: 400;
+            border-bottom: 2px solid #fff;
+        }
+
+        td.status.down {
+            color: #6b5f45;
+        }
+
+        .n {
+            text-align: right;
+            padding-right: 1em;
+        }
+
+        @media (max-width: 600px) {
+            .note {
+                display: none;
+            }
+
+            .segment {
+                font-size: 0;
+            }
+
+            #years span.every2:not(.every4) {
+                visibility: hidden;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="main">
+        <p class="nav"><a href="index.html">Home</a> &middot; <a href="about.html">About</a></p>
+
+        <h1>History: when the Executive was up and down</h1>
+
+        <noscript>
+            <p>This page draws its timeline in the browser, so it needs JavaScript.</p>
+        </noscript>
+
+        <p id="summary"></p>
+
+        <div id="bar" role="img" aria-label="Timeline of periods with and without an Executive since 1999"></div>
+        <div id="ticks"></div>
+        <p class="legend"><i></i>Executive in office <i class="hatch"></i>No Executive</p>
+
+        <h2>Year by year</h2>
+        <div id="gridwrap">
+            <div id="months"></div>
+            <div id="grid" role="img" aria-label="Month-by-month grid, one column per year"></div>
+            <div id="years"></div>
+        </div>
+
+        <h2>The full record</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>To</th>
+                    <th class="n">Days</th>
+                    <th>Status</th>
+                    <th class="note">Note</th>
+                </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+        </table>
+
+        <h2>How we counted this</h2>
+
+        <p>Each period is a stretch of time when an Executive was in office, from the day it was formed to the day it
+            was suspended, collapsed or dissolved. Everything in between counts as no Executive, including the weeks
+            around an election. Two 24-hour suspensions in August and September 2001 are not shown.</p>
+
+        <p>Dates are taken from
+            <a href="https://en.wikipedia.org/wiki/Northern_Ireland_Executive">Wikipedia's article on the Northern
+                Ireland Executive</a>.
+        </p>
+    </div>
+
+    <script type="text/javascript">
+        "use strict";
+
+        // To update this page, edit this list. Each period runs from "start" to "end"; the current one has no end.
+        var PERIODS = [
+            { start: "1999-12-02", end: "2000-02-12", inOffice: true, note: "First Executive" },
+            { start: "2000-02-12", end: "2000-05-30", inOffice: false, note: "Suspended" },
+            { start: "2000-05-30", end: "2002-10-14", inOffice: true, note: "Restored" },
+            { start: "2002-10-14", end: "2007-05-08", inOffice: false, note: "Suspended, direct rule" },
+            { start: "2007-05-08", end: "2011-03-24", inOffice: true, note: "DUP and Sinn Féin Executive" },
+            { start: "2011-03-24", end: "2011-05-16", inOffice: false, note: "Election period" },
+            { start: "2011-05-16", end: "2016-05-16", inOffice: true, note: "Executive" },
+            { start: "2016-05-16", end: "2016-05-26", inOffice: false, note: "Election period" },
+            { start: "2016-05-26", end: "2017-01-16", inOffice: true, note: "Executive" },
+            { start: "2017-01-16", end: "2020-01-11", inOffice: false, note: "Collapse (RHI)" },
+            { start: "2020-01-11", end: "2022-02-03", inOffice: true, note: "New Decade, New Approach" },
+            { start: "2022-02-03", end: "2024-02-03", inOffice: false, note: "Collapse (Protocol)" },
+            { start: "2024-02-03", end: null, inOffice: true, note: "Executive restored" }
+        ];
+
+        var MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
+        var today = new Date();
+        var historyStart = parseDate(PERIODS[0].start);
+        var historyLength = today - historyStart;
+
+        function parseDate(text) {
+            return text ? new Date(text + "T00:00:00Z") : today;
+        }
+
+        function daysIn(period) {
+            return Math.floor((parseDate(period.end) - parseDate(period.start)) / MILLISECONDS_IN_DAY);
+        }
+
+        function formatDate(text) {
+            return parseDate(text).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+        }
+
+        function formatNumber(value) {
+            return value.toLocaleString("en-GB");
+        }
+
+        function isInOffice(moment) {
+            return PERIODS.some(function (period) {
+                return period.inOffice && moment >= parseDate(period.start) && moment < parseDate(period.end);
+            });
+        }
+
+        function describe(period) {
+            return (period.inOffice ? "In office" : "No Executive");
+        }
+
+        function drawSummary() {
+            var daysInOffice = PERIODS.filter(function (period) { return period.inOffice; })
+                .reduce(function (total, period) { return total + daysIn(period); }, 0);
+            var totalDays = Math.floor(historyLength / MILLISECONDS_IN_DAY);
+
+            document.getElementById("summary").innerHTML =
+                "Since devolution began there has been an Executive for <strong>" + formatNumber(daysInOffice) +
+                "</strong> of <strong>" + formatNumber(totalDays) + "</strong> days (<strong>" +
+                (100 * daysInOffice / totalDays).toFixed(1) + "%</strong>).";
+        }
+
+        function drawBar() {
+            var segments = PERIODS.map(function (period) {
+                var length = daysIn(period);
+                var label = length >= 700 ? "<b>" + describe(period) + "</b>" : "";
+                return '<span class="segment ' + (period.inOffice ? "up" : "down hatch") + '" style="flex-grow:' + length +
+                    '" title="' + describe(period) + ": " + formatDate(period.start) + " to " +
+                    (period.end ? formatDate(period.end) : "today") + " (" + formatNumber(length) + ' days)">' + label + "</span>";
+            });
+            document.getElementById("bar").innerHTML = segments.join("");
+
+            // A tick every five years, from the first round year after the start until today
+            var ticks = "";
+            var lastYear = today.getUTCFullYear();
+            for (var year = Math.ceil(historyStart.getUTCFullYear() / 5) * 5; year <= lastYear; year += 5) {
+                var offset = 100 * (Date.UTC(year, 0, 1) - historyStart) / historyLength;
+                ticks += '<span class="tick" style="left:' + offset + '%">' + year + "</span>";
+            }
+            document.getElementById("ticks").innerHTML = ticks;
+        }
+
+        function drawGrid() {
+            var firstYear = historyStart.getUTCFullYear();
+            var lastYear = today.getUTCFullYear();
+            var columns = "repeat(" + (lastYear - firstYear + 1) + ",minmax(0,1fr))";
+            var cells = "";
+            var labels = "";
+
+            for (var month = 0; month < 12; month++) {
+                for (var year = firstYear; year <= lastYear; year++) {
+                    var monthStart = new Date(Date.UTC(year, month, 1));
+                    var moment = new Date(Math.min(Date.UTC(year, month, 15), today.getTime()));
+                    var visible = moment >= historyStart && monthStart <= today;
+                    var kind = !visible ? "none" : isInOffice(moment) ? "up" : "down hatch";
+                    cells += '<i class="cell ' + kind + '" title="' +
+                        monthStart.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" }) + '"></i>';
+                }
+            }
+            for (var y = firstYear; y <= lastYear; y++) {
+                var classes = y % 2 === 0 ? "every2" + (y % 4 === 0 ? " every4" : "") : "";
+                labels += '<span class="' + classes + '">' + (y % 2 === 0 ? String(y).slice(2) : "") + "</span>";
+            }
+
+            document.getElementById("grid").style.gridTemplateColumns = columns;
+            document.getElementById("grid").innerHTML = cells;
+            document.getElementById("years").style.gridTemplateColumns = columns;
+            document.getElementById("years").innerHTML = labels;
+            document.getElementById("months").innerHTML = "JFMAMJJASOND".split("").map(function (letter) {
+                return "<span>" + letter + "</span>";
+            }).join("");
+        }
+
+        function drawTable() {
+            document.getElementById("rows").innerHTML = PERIODS.slice().reverse().map(function (period) {
+                return '<tr><td>' + formatDate(period.start) + "</td><td>" + (period.end ? formatDate(period.end) : "now") +
+                    '</td><td class="n">' + formatNumber(daysIn(period)) + '</td><td class="status ' +
+                    (period.inOffice ? "up" : "down") + '">' + describe(period) + '</td><td class="note">' + period.note + "</td></tr>";
+            }).join("");
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            drawSummary();
+            drawBar();
+            drawGrid();
+            drawTable();
+        });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics Ask Bolster for numbers-->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N73RZEJ1WN"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-N73RZEJ1WN');
+    </script>
+</body>
+
+</html>
