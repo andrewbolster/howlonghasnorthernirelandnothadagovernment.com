@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Days since Northern Ireland had a government : History</title>
+
+    <!-- Opengraph -->
+    <meta property="og:site_name" content="How long has Northern Ireland not had a government?">
+    <meta property="og:description" content="How long has Northern Ireland not had a government?">
+    <meta property="og:title" content="How long has Northern Ireland not had a government?">
+    <meta property="og:url" content="https://howlonghasnorthernirelandnothadagovernment.com">
+    <meta property="og:type" content="website">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+    <style>
+        #main {
+            --page: #d4c5a9;
+            --link: #6b5f45;
+            width: 80%;
+            color: #fff;
+            padding: 10%;
+            font-family: 'Oswald', sans-serif;
+            background-color: var(--page);
+            text-align: left;
+            font-size: 1.25em;
+        }
+
+        a {
+            color: #6b5f45;
+        }
+
+        .nav {
+            font-size: 80%;
+            margin: 0;
+        }
+
+        /* Timeline bar: one segment per period, its width set by its length in days */
+        #bar {
+            position: relative;
+            display: flex;
+            height: 36px;
+            margin: 1.5em 0 0;
+        }
+
+        .segment {
+            flex-basis: 0;
+            min-width: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 65%;
+            line-height: 1;
+        }
+
+        .segment.up,
+        .cell.up {
+            background: #fff;
+        }
+
+        .segment.up b {
+            color: #6b5f45;
+        }
+
+        .segment b {
+            font-weight: 400;
+            padding: .15em .45em;
+        }
+
+        .segment.down b {
+            background: #6b5f45;
+            color: #fff;
+        }
+
+        /* No Executive is hatched, so it never depends on colour alone */
+        .hatch {
+            background: repeating-linear-gradient(135deg, #6b5f45 0 3px, transparent 3px 7px);
+            box-shadow: inset 0 0 0 1px #6b5f45;
+        }
+
+        #ticks {
+            position: relative;
+            height: 1.4em;
+            font-size: 70%;
+            margin-bottom: .5em;
+        }
+
+        .tick {
+            position: absolute;
+            transform: translateX(-50%);
+        }
+
+        .tick:first-of-type {
+            transform: none;
+        }
+
+        .tick:last-of-type {
+            transform: translateX(-100%);
+        }
+
+        .legend {
+            font-size: 75%;
+            margin: .5em 0 1.5em;
+        }
+
+        .legend i {
+            display: inline-block;
+            width: 1.4em;
+            height: .8em;
+            vertical-align: -.05em;
+            margin: 0 .3em 0 1em;
+        }
+
+        .legend > i:first-child {
+            margin-left: 0;
+            background: #fff;
+        }
+
+        /* Marker for when this site launched: a ringed white dot, readable on both white and hatched areas */
+        .launch-dot,
+        .cell.launch::after,
+        .legend i.launch-key {
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #6b5f45;
+            box-sizing: border-box;
+        }
+
+        /* Small on purpose. It sits in the row of year labels under the bar, level with the year text. */
+        .launch-dot {
+            position: absolute;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            margin: -4px 0 0 -4px;
+            border-width: 1.5px;
+        }
+
+        .launch-dot::after {
+            content: "";
+            position: absolute;
+            inset: -10px;
+        }
+
+        .cell.launch {
+            position: relative;
+        }
+
+        .cell.launch::after {
+            content: "";
+            position: absolute;
+            inset: 34%;
+            border-width: 1px;
+        }
+
+        .legend i.launch-key {
+            width: .55em;
+            height: .55em;
+            border-width: 1.5px;
+            vertical-align: .05em;
+        }
+
+        .legend .launch-legend {
+            white-space: nowrap;
+            opacity: .85;
+        }
+
+        /* Year grid: one column per year, one row per month */
+        #gridwrap {
+            display: grid;
+            grid-template-columns: 1.2em minmax(0, 1fr);
+            gap: 0 .4em;
+            margin-top: 1em;
+        }
+
+        #months {
+            display: grid;
+            grid-template-rows: repeat(12, 1fr);
+            font-size: 55%;
+            text-align: right;
+        }
+
+        #grid {
+            display: grid;
+            gap: 2px;
+        }
+
+        .cell {
+            display: block;
+            aspect-ratio: 1;
+        }
+
+        .cell.none {
+            background: none;
+            box-shadow: none;
+        }
+
+        #years {
+            grid-column: 2;
+            display: grid;
+            font-size: 60%;
+            margin-top: .3em;
+        }
+
+        #years span {
+            white-space: nowrap;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 80%;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: .35em .6em .35em 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .45);
+        }
+
+        th {
+            font-weight: 400;
+            border-bottom: 2px solid #fff;
+        }
+
+        td.status.down {
+            color: #6b5f45;
+        }
+
+        /* Superscript source link after a date. The arrow is a text character (Oswald has none), so use a system font. */
+        .source {
+            position: relative;
+            vertical-align: super;
+            font-family: system-ui, "Segoe UI Symbol", "Apple Symbols", sans-serif;
+            font-size: 65%;
+            line-height: 0;
+            margin-left: .25em;
+            text-decoration: none;
+        }
+
+        .source::after {
+            content: "";
+            position: absolute;
+            inset: -14px -10px -10px -10px;
+        }
+
+        .source:hover,
+        .source:focus-visible {
+            background: #6b5f45;
+            color: #fff;
+            border-radius: 2px;
+        }
+
+        .n {
+            text-align: right;
+            padding-right: 1em;
+        }
+
+        @media (max-width: 600px) {
+            .note {
+                display: none;
+            }
+
+            .segment {
+                font-size: 0;
+            }
+
+            #years span.every2:not(.every4) {
+                visibility: hidden;
+            }
+
+            .cell.launch::after {
+                inset: 22%;
+            }
+
+            /* Year labels start at their year, so the launch dot never touches one and no two run together */
+            .tick,
+            .tick:last-of-type {
+                transform: none;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="main">
+        <p class="nav"><a href="index.html">Home</a> &middot; <a href="about.html">About</a> &middot; <span aria-current="page">History</span></p>
+
+        <h1>History: when the Executive was up and down</h1>
+
+        <noscript>
+            <p>This page draws its timeline in the browser, so it needs JavaScript.</p>
+        </noscript>
+
+        <p id="summary"></p>
+
+        <div id="bar" role="img" aria-label="Timeline of periods with and without an Executive since 1999"></div>
+        <div id="ticks"></div>
+        <p class="legend"><i></i>Executive in office <i class="hatch"></i>No Executive <span class="launch-legend"><i class="launch-key"></i><span id="launch-legend">Site launched</span></span></p>
+
+        <h2>Year by year</h2>
+        <div id="gridwrap">
+            <div id="months"></div>
+            <div id="grid" role="img" aria-label="Month-by-month grid, one column per year"></div>
+            <div id="years"></div>
+        </div>
+
+        <h2>The full record</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>To</th>
+                    <th class="n">Days</th>
+                    <th>Status</th>
+                    <th class="note">Note</th>
+                </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+        </table>
+
+        <h2>How we counted this</h2>
+
+        <p>Each period is a stretch of time when an Executive was in office, from the day it was formed to the day it
+            was suspended, collapsed or dissolved. Everything in between counts as no Executive, including the weeks
+            around an election. Two 24-hour suspensions in August and September 2001 are not shown.</p>
+
+        <p>Dates are taken from
+            <a href="https://en.wikipedia.org/wiki/Northern_Ireland_Executive">Wikipedia's article on the Northern
+                Ireland Executive</a>.
+        </p>
+
+        <p>If you'd like to argue with any dates or references, consider raising an issue
+            <a href="https://github.com/andrewbolster/howlonghasnorthernirelandnothadagovernment.com/issues">here</a>.
+        </p>
+    </div>
+
+    <script type="text/javascript">
+        "use strict";
+
+        // To update this page, edit this list. Each period runs from "start" to "end"; the current one has no end.
+        var PERIODS = [
+            { start: "1999-12-02", end: "2000-02-12", inOffice: true, note: "First Executive" },
+            { start: "2000-02-12", end: "2000-05-30", inOffice: false, note: "Suspended" },
+            { start: "2000-05-30", end: "2002-10-14", inOffice: true, note: "Restored" },
+            { start: "2002-10-14", end: "2007-05-08", inOffice: false, note: "Suspended, direct rule" },
+            { start: "2007-05-08", end: "2011-03-24", inOffice: true, note: "DUP and Sinn Féin Executive" },
+            { start: "2011-03-24", end: "2011-05-16", inOffice: false, note: "Election period" },
+            { start: "2011-05-16", end: "2016-05-16", inOffice: true, note: "Executive" },
+            { start: "2016-05-16", end: "2016-05-26", inOffice: false, note: "Election period" },
+            { start: "2016-05-26", end: "2017-01-16", inOffice: true, note: "Executive" },
+            { start: "2017-01-16", end: "2020-01-11", inOffice: false, note: "Collapse (RHI)" },
+            { start: "2020-01-11", end: "2022-02-03", inOffice: true, note: "New Decade, New Approach" },
+            { start: "2022-02-03", end: "2024-02-03", inOffice: false, note: "Collapse (Protocol)" },
+            { start: "2024-02-03", end: null, inOffice: true, note: "Executive restored" }
+        ];
+
+        // A source for each date where one is confirmed. The end of one period and the start of the next share a date, so they share a link.
+        var SOURCES = {
+            "1999-12-02": { url: "https://archive.niassembly.gov.uk/io/summary/new_summary.htm", label: "Northern Ireland Assembly summary: devolution from 2 December 1999" },
+            "2000-02-12": { url: "https://archive.niassembly.gov.uk/io/summary/new_summary.htm", label: "Northern Ireland Assembly summary: Executive suspended on 11 February 2000, effective from midnight" },
+            "2000-05-30": { url: "https://www.legislation.gov.uk/uksi/2000/1445/introduction/made", label: "legislation.gov.uk: Restoration of Devolved Government Order 2000, in force 30 May 2000" },
+            "2002-10-14": { url: "https://www.legislation.gov.uk/uksi/2002/2574/introduction/made", label: "legislation.gov.uk: Suspension of Devolved Government Order 2002, made 14 October, in force 15 October" },
+            "2007-05-08": { url: "https://www.legislation.gov.uk/uksi/2007/1397/introduction/made", label: "legislation.gov.uk: Restoration of Devolved Government Order 2007, in force 8 May 2007" },
+            "2011-03-24": { url: "https://www.niassembly.gov.uk/assembly-business/office-of-the-speaker/former-northern-ireland-assembly-speakers/", label: "Northern Ireland Assembly: third mandate dissolved on 24 March 2011" },
+            "2011-05-16": { url: "https://www.irishtimes.com/news/stormont-assembly-votes-in-new-team-of-ministers-1.573383", label: "Irish Times: Assembly votes in the new team of ministers (published 17 May 2011)" },
+            "2016-05-16": { url: "https://en.wikipedia.org/wiki/Executive_of_the_4th_Northern_Ireland_Assembly", label: "Wikipedia: Executive of the 4th Northern Ireland Assembly (this date is Wikipedia's)" },
+            "2016-05-26": { url: "https://en.wikipedia.org/wiki/Executive_of_the_5th_Northern_Ireland_Assembly", label: "Wikipedia: Executive of the 5th Northern Ireland Assembly" },
+            "2017-01-16": { url: "https://www.irishtimes.com/news/politics/martin-mcguinness-resigns-as-deputy-first-minister-1.2930300", label: "Irish Times: McGuinness resigns on 9 January, with seven days to replace him" },
+            "2020-01-11": { url: "https://www.rte.ie/news/ireland/2020/0111/1105717-northern-ireland-politics/", label: "RTÉ: ministers appointed as the Assembly resumes, 11 January 2020" },
+            "2022-02-03": { url: "https://www.rte.ie/news/ulster/2022/0203/1277530-paul-givan/", label: "RTÉ: Paul Givan resigns as First Minister, 3 February 2022" },
+            "2024-02-03": { url: "https://www.rte.ie/news/ulster/2024/0203/1430314-stormont-assembly-reax/", label: "RTÉ: power-sharing returns, 3 February 2024" }
+        };
+
+        // When this site launched: the date of the first commit to this repository.
+        var LAUNCH = {
+            date: "2018-04-26",
+            label: "Site launched",
+            url: "https://github.com/andrewbolster/howlonghasnorthernirelandnothadagovernment.com/pull/1",
+            sourceLabel: "GitHub: the original pull request, \u201cBasic count-up page\u201d, merged 26 April 2018"
+        };
+
+        var MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
+        var today = new Date();
+        var historyStart = parseDate(PERIODS[0].start);
+        var historyLength = today - historyStart;
+
+        function parseDate(text) {
+            return text ? new Date(text + "T00:00:00Z") : today;
+        }
+
+        function daysIn(period) {
+            return Math.floor((parseDate(period.end) - parseDate(period.start)) / MILLISECONDS_IN_DAY);
+        }
+
+        function formatDate(text) {
+            return parseDate(text).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+        }
+
+        function formatNumber(value) {
+            return value.toLocaleString("en-GB");
+        }
+
+        function isInOffice(moment) {
+            return PERIODS.some(function (period) {
+                return period.inOffice && moment >= parseDate(period.start) && moment < parseDate(period.end);
+            });
+        }
+
+        function describe(period) {
+            return (period.inOffice ? "In office" : "No Executive");
+        }
+
+        function drawSummary() {
+            var daysInOffice = PERIODS.filter(function (period) { return period.inOffice; })
+                .reduce(function (total, period) { return total + daysIn(period); }, 0);
+            var totalDays = Math.floor(historyLength / MILLISECONDS_IN_DAY);
+
+            document.getElementById("summary").innerHTML =
+                "Since devolution began there has been an Executive for <strong>" + formatNumber(daysInOffice) +
+                "</strong> of <strong>" + formatNumber(totalDays) + "</strong> days (<strong>" +
+                (100 * daysInOffice / totalDays).toFixed(1) + "%</strong>).";
+        }
+
+        function drawBar() {
+            var segments = PERIODS.map(function (period) {
+                var length = daysIn(period);
+                var label = length >= 700 ? "<b>" + describe(period) + "</b>" : "";
+                return '<span class="segment ' + (period.inOffice ? "up" : "down hatch") + '" style="flex-grow:' + length +
+                    '" title="' + describe(period) + ": " + formatDate(period.start) + " to " +
+                    (period.end ? formatDate(period.end) : "today") + " (" + formatNumber(length) + ' days)">' + label + "</span>";
+            });
+            var launchOffset = 100 * (parseDate(LAUNCH.date) - historyStart) / historyLength;
+            var launchText = LAUNCH.label + ", " + formatDate(LAUNCH.date);
+            document.getElementById("bar").innerHTML = segments.join("");
+            document.getElementById("bar").setAttribute("aria-label",
+                "Timeline of periods with and without an Executive since 1999. " + launchText + ".");
+            document.getElementById("launch-legend").innerHTML = launchText + sourceLink(LAUNCH.url,
+                "Source for the launch date: " + LAUNCH.sourceLabel + " (opens in a new tab)");
+
+            // A tick every five years, from the first round year after the start until today
+            var ticks = "";
+            var lastYear = today.getUTCFullYear();
+            for (var year = Math.ceil(historyStart.getUTCFullYear() / 5) * 5; year <= lastYear; year += 5) {
+                var offset = 100 * (Date.UTC(year, 0, 1) - historyStart) / historyLength;
+                ticks += '<span class="tick" style="left:' + offset + '%">' + year + "</span>";
+            }
+            // The launch dot sits in the same row as the year labels, at the date it stands for
+            ticks += '<i class="launch-dot" style="left:' + launchOffset + '%" title="' + launchText + '"></i>';
+            document.getElementById("ticks").innerHTML = ticks;
+        }
+
+        function drawGrid() {
+            var firstYear = historyStart.getUTCFullYear();
+            var lastYear = today.getUTCFullYear();
+            var columns = "repeat(" + (lastYear - firstYear + 1) + ",minmax(0,1fr))";
+            var launchDate = parseDate(LAUNCH.date);
+            var cells = "";
+            var labels = "";
+
+            for (var month = 0; month < 12; month++) {
+                for (var year = firstYear; year <= lastYear; year++) {
+                    var monthStart = new Date(Date.UTC(year, month, 1));
+                    var moment = new Date(Math.min(Date.UTC(year, month, 15), today.getTime()));
+                    var visible = moment >= historyStart && monthStart <= today;
+                    var kind = !visible ? "none" : isInOffice(moment) ? "up" : "down hatch";
+                    var title = monthStart.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
+                    if (year === launchDate.getUTCFullYear() && month === launchDate.getUTCMonth()) {
+                        kind += " launch";
+                        title += " (" + LAUNCH.label + ", " + formatDate(LAUNCH.date) + ")";
+                    }
+                    cells += '<i class="cell ' + kind + '" title="' + title + '"></i>';
+                }
+            }
+            for (var y = firstYear; y <= lastYear; y++) {
+                var classes = y % 2 === 0 ? "every2" + (y % 4 === 0 ? " every4" : "") : "";
+                labels += '<span class="' + classes + '">' + (y % 2 === 0 ? String(y).slice(2) : "") + "</span>";
+            }
+
+            document.getElementById("grid").style.gridTemplateColumns = columns;
+            document.getElementById("grid").innerHTML = cells;
+            document.getElementById("years").style.gridTemplateColumns = columns;
+            document.getElementById("years").innerHTML = labels;
+            document.getElementById("months").innerHTML = "JFMAMJJASOND".split("").map(function (letter) {
+                return "<span>" + letter + "</span>";
+            }).join("");
+        }
+
+        // A small superscript link to a source, opening in a new tab.
+        // U+2060 stops the icon wrapping onto a line of its own; U+FE0E asks for the arrow as text, not an emoji.
+        function sourceLink(url, description) {
+            return '\u2060<a class="source" href="' + url + '" target="_blank" rel="noopener" title="' +
+                description + '" aria-label="' + description + '">\u2197\uFE0E</a>';
+        }
+
+        // A date, followed by a link to its source when we have one.
+        function dateWithSource(text) {
+            var source = SOURCES[text];
+            if (!source) {
+                return formatDate(text);
+            }
+            return formatDate(text) + sourceLink(source.url,
+                "Source for " + formatDate(text) + ": " + source.label + " (opens in a new tab)");
+        }
+
+        function drawTable() {
+            document.getElementById("rows").innerHTML = PERIODS.slice().reverse().map(function (period) {
+                return '<tr><td>' + dateWithSource(period.start) + "</td><td>" + (period.end ? dateWithSource(period.end) : "now") +
+                    '</td><td class="n">' + formatNumber(daysIn(period)) + '</td><td class="status ' +
+                    (period.inOffice ? "up" : "down") + '">' + describe(period) + '</td><td class="note">' + period.note + "</td></tr>";
+            }).join("");
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            drawSummary();
+            drawBar();
+            drawGrid();
+            drawTable();
+        });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics Ask Bolster for numbers-->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N73RZEJ1WN"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-N73RZEJ1WN');
+    </script>
+</body>
+
+</html>
