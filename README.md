@@ -32,6 +32,8 @@ then visit <http://localhost:8000>.
 2. **`history.html`**: edit the `PERIODS` list at the top of the script (end the current period and add a new one), and add a `SOURCES` entry for the new date. The counts, timeline, grid and table all draw themselves from those two lists.
 3. **`about.html`**: add a dated update as a new `<h1>` at the top.
 
+4. **`sitemap.xml`**: update the `<lastmod>` date of each page you changed. It is written by hand, since there is no build step.
+
 The counter on the homepage and the history page are separate, so both need editing.
 
 ## How the history dates were chosen

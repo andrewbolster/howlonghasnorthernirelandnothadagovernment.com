@@ -10,11 +10,12 @@ A static, zero-build website with three pages: `index.html` (the counter), `abou
 
 ## When the government falls or returns
 
-Three places need editing, and they are separate:
+Four places need editing, and they are separate:
 
 1. `index.html`: change `noGovDate` (months are zero-indexed, so February is `1`) and the status wording at the top.
 2. `history.html`: end the current period in the `PERIODS` array and add a new one, and add a `SOURCES` entry for the new date.
 3. `about.html`: add a dated update as a new `<h1>` at the top.
+4. `sitemap.xml`: update `<lastmod>` for each page changed. It is hand-written, like everything else here; `robots.txt` points to it. If you add a page, add a `<url>` entry too.
 
 ## Architecture
 
